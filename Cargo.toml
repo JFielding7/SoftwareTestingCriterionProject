@@ -1,0 +1,11 @@
+[package]
+name = "software_testing_project"
+version = "0.1.0"
+edition = "2024"
+
+[dev-dependencies]
+criterion = "0.8.0"
+
+[[bench]]
+name = "positions_per_second"
+harness = false
