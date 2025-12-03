@@ -4,7 +4,7 @@ use std::hint::black_box;
 
 const MAX_THREADS: usize = 8;
 
-fn bench_min_max_threads(c: &mut Criterion) {
+fn multi_threaded_min_with_max_threads(c: &mut Criterion) {
     const VEC_SIZE: i32 = 1 << 21;
     
     let mut group = c.benchmark_group("multi_threaded_min");
@@ -25,7 +25,7 @@ fn bench_min_max_threads(c: &mut Criterion) {
     group.finish();
 }
 
-fn multi_threaded_min_throughput(c: &mut Criterion) {
+fn multi_threaded_min_different_threads_sizes(c: &mut Criterion) {
     const MIN_SIZE: i32 = 1 << 18;
     const MAX_SIZE: i32 = 1 << 22;
     const SIZE_STEP: usize = 1 << 18;
@@ -62,7 +62,7 @@ fn multi_threaded_min_throughput(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, multi_threaded_min_throughput);
-criterion_group!(benches1, bench_min_max_threads);
+criterion_group!(group0, multi_threaded_min_with_max_threads);
+criterion_group!(group1, multi_threaded_min_different_threads_sizes);
 
-criterion_main!(benches, benches1);
+criterion_main!(group0, group1);

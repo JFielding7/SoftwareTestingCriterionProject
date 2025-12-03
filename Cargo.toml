@@ -18,5 +18,5 @@ name = "total_time"
 harness = false
 
 [[bench]]
-name = "positions_per_second"
+name = "states_per_second"
 harness = false

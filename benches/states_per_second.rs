@@ -86,11 +86,11 @@ impl ValueFormatter for StatesPerSecondFormatter {
         }
     }
 
-    fn scale_throughputs(&self, typical_value: f64, throughput: &Throughput, values: &mut [f64]) -> &'static str {
+    fn scale_throughputs(&self, _: f64, _: &Throughput, _: &mut [f64]) -> &'static str {
         ""
     }
 
-    fn scale_for_machines(&self, values: &mut [f64]) -> &'static str {
+    fn scale_for_machines(&self, _: &mut [f64]) -> &'static str {
         ""
     }
 }
