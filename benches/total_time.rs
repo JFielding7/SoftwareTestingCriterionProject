@@ -14,7 +14,7 @@ fn bench_total_time(c: &mut Criterion) {
         "XXOXOX ",
     ];
 
-    let evaluate_position = software_testing_project::cache_strategy::evaluate_position;
+    let evaluate_position = software_testing_project::threads::evaluate_position;
 
     let mut group = c.benchmark_group("total_time_group");
     group.sample_size(10);

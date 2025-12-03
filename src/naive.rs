@@ -1,14 +1,6 @@
 use std::cmp::{max};
 use crate::state::State;
-
-const LOSS: i32 = -1;
-const DRAW: i32 = 0;
-const WIN: i32 = 1;
-
-pub struct EvaluatePositionReturn {
-    pub eval: i32,
-    pub positions_evaluated: usize,
-}
+use crate::evaluate_position_util::{EvaluatePositionReturn, DRAW, LOSS, WIN};
 
 pub fn evaluate_position_rec(
     state: State,
@@ -52,11 +44,8 @@ pub fn evaluate_position_rec(
 }
 
 pub fn evaluate_position(state: State) -> EvaluatePositionReturn {
-    let mut positions = 0;
-    let eval = evaluate_position_rec(state, LOSS, WIN, &mut positions);
+    let mut states_evaluated = 0;
+    let eval = evaluate_position_rec(state, LOSS, WIN, &mut states_evaluated);
 
-    EvaluatePositionReturn {
-        eval,
-        positions_evaluated: positions
-    }
+    EvaluatePositionReturn::new(eval, states_evaluated)
 }

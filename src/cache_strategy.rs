@@ -1,12 +1,8 @@
 use std::cmp::{max, min};
 use std::collections::HashMap;
 use crate::naive;
-use crate::naive::EvaluatePositionReturn;
 use crate::state::State;
-
-const LOSS: i32 = -1;
-const DRAW: i32 = 0;
-const WIN: i32 = 1;
+use crate::evaluate_position_util::{EvaluatePositionReturn, DRAW, LOSS, WIN};
 
 struct GlobalState {
     cache: StateCache,
@@ -110,8 +106,5 @@ pub fn evaluate_position(state: State) -> EvaluatePositionReturn {
 
     let eval = evaluate_position_rec(state, LOSS, WIN, &mut global_state);
 
-    EvaluatePositionReturn {
-        eval,
-        positions_evaluated: global_state.positions_evaluated
-    }
+    EvaluatePositionReturn::new(eval, global_state.positions_evaluated)
 }
