@@ -1,9 +1,9 @@
 use std::time::Instant;
-use crate::engine::{evaluate_position};
+use crate::naive::{evaluate_position};
 use crate::state::State;
 
-mod min;
-mod engine;
+mod example_min;
+mod naive;
 mod state;
 mod piece;
 

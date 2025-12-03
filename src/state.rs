@@ -1,4 +1,5 @@
 use std::fmt;
+use std::hash::{DefaultHasher, Hash, Hasher};
 use crate::piece::Piece;
 use crate::piece::Piece::{EMPTY, FIRST, SECOND};
 
@@ -8,11 +9,19 @@ const BOARD_SIZE: usize = ROWS * COLS;
 const DEFAULT_MOVE_ORDER: [usize; COLS] = [3, 2, 4, 1, 5, 0, 6];
 
 
+#[derive(Eq, PartialEq, Clone)]
 pub struct State {
     board: [Piece; BOARD_SIZE],
     current_player: Piece,
     last_move: usize,
     moves_made: usize,
+    curr_hash: u64,
+}
+
+impl Hash for State {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.curr_hash.hash(state);
+    }
 }
 
 impl State {
@@ -30,6 +39,7 @@ impl State {
             current_player: FIRST,
             last_move: 0,
             moves_made: 0,
+            curr_hash: 1,
         }
     }
 
@@ -52,6 +62,7 @@ impl State {
             current_player: self.current_player.next_player(),
             last_move: next_move,
             moves_made: self.moves_made + 1,
+            curr_hash: (self.curr_hash + self.current_player.hash(next_move)) % 1000000007
         })
     }
 
@@ -112,6 +123,10 @@ impl State {
         }
 
         false
+    }
+
+    pub fn moves_made(&self) -> usize {
+        self.moves_made
     }
 
     pub fn board_full(&self) -> bool {

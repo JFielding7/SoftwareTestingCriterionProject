@@ -7,5 +7,9 @@ edition = "2024"
 criterion = "0.8.0"
 
 [[bench]]
+name = "total_time"
+harness = false
+
+[[bench]]
 name = "positions_per_second"
 harness = false

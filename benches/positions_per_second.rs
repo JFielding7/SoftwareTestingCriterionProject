@@ -3,7 +3,6 @@ use std::time::Instant;
 use criterion::measurement::{Measurement, ValueFormatter};
 use criterion::{criterion_group, criterion_main, Criterion, Throughput};
 use criterion::BatchSize::SmallInput;
-use software_testing_project::engine::evaluate_position;
 use software_testing_project::state::State;
 
 static mut STATES_EVALUATED: usize = 0;
@@ -79,7 +78,7 @@ impl ValueFormatter for StatesPerSecondFormatter {
     }
 }
 
-fn bench_connect4_simple(c: &mut Criterion<SecondsPerState>) {
+fn bench_positions_per_second(c: &mut Criterion<SecondsPerState>) {
     let board = vec![
         "   O   ",
         "   X   ",
@@ -89,7 +88,9 @@ fn bench_connect4_simple(c: &mut Criterion<SecondsPerState>) {
         "XXOXOX ",
     ];
 
-    let mut group = c.benchmark_group("connect4_simple");
+    let evaluate_position = software_testing_project::cache_strategy::evaluate_position;
+
+    let mut group = c.benchmark_group("positions_per_second_group");
     group.sample_size(10);
 
     group.bench_function("evaluate_position", |bencher| {
@@ -98,6 +99,8 @@ fn bench_connect4_simple(c: &mut Criterion<SecondsPerState>) {
             |state| {
                 let ret = evaluate_position(black_box(state));
                 unsafe { STATES_EVALUATED += ret.positions_evaluated }
+                println!("{}", ret.positions_evaluated);
+                println!("{}", ret.eval);
             },
             SmallInput,
         )
@@ -109,7 +112,7 @@ fn bench_connect4_simple(c: &mut Criterion<SecondsPerState>) {
 criterion_group! {
     name = benches;
     config = Criterion::default().with_measurement(SecondsPerState);
-    targets = bench_connect4_simple
+    targets = bench_positions_per_second
 }
 
 criterion_main!(benches);

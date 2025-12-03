@@ -1,12 +1,14 @@
 use std::sync::Arc;
 use criterion::{criterion_group, criterion_main, Criterion};
-use software_testing_project::min::{multi_threaded_min_fast, multi_threaded_min_slow};
+use software_testing_project::example_min::{multi_threaded_min_fast, multi_threaded_min_slow};
 use std::hint::black_box;
 
 fn bench_multi_threaded_min(c: &mut Criterion) {
-    let mut group = c.benchmark_group("multi_threaded_min");
-    let vec: Arc<Vec<i32>> = Arc::new((0..1000000).collect());
     const NUM_THREADS: usize = 8;
+    const VEC_SIZE: i32 = 1 << 20;
+    
+    let mut group = c.benchmark_group("multi_threaded_min");
+    let vec: Arc<Vec<i32>> = Arc::new((0..VEC_SIZE).collect());
 
     group.bench_function("multi_threaded_min_slow", |bencher| {
         bencher.iter(|| {
