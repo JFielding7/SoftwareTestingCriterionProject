@@ -1,5 +1,6 @@
 use std::cell::Cell;
 use std::hint::black_box;
+use std::ops::Add;
 use std::time::Instant;
 use criterion::measurement::{Measurement, ValueFormatter};
 use criterion::{criterion_group, criterion_main, Criterion, Throughput};
@@ -23,11 +24,55 @@ pub fn add_states_evaluated(state_count: usize) {
     STATES_EVALUATED.set(STATES_EVALUATED.get() + state_count);
 }
 
-struct SecondsPerState;
+struct SecondsPerState {
+    seconds: f64,
+    total_states: usize,
+    iterations: usize,
+}
 
-impl Measurement for SecondsPerState {
+impl SecondsPerState {
+    fn new(
+        seconds: f64,
+        total_states: usize,
+        iterations: usize,
+    ) -> Self {
+        Self {
+            seconds,
+            total_states,
+            iterations
+        }
+    }
+
+    fn zero() -> Self {
+        Self {
+            seconds: 0.0,
+            total_states: 0,
+            iterations: 0
+        }
+    }
+
+    fn to_f64(&self) -> f64 {
+        self.seconds * self.iterations as f64 / self.total_states as f64
+    }
+}
+
+impl Add<&SecondsPerState> for &SecondsPerState {
+    type Output = SecondsPerState;
+
+    fn add(self, other: &SecondsPerState) -> SecondsPerState {
+        SecondsPerState::new(
+            self.seconds + other.seconds,
+            self.total_states + other.total_states,
+            self.iterations + other.iterations
+        )
+    }
+}
+
+struct SecondsPerStateMeasurement;
+
+impl Measurement for SecondsPerStateMeasurement {
     type Intermediate = Instant;
-    type Value = (f64, usize, usize);
+    type Value = SecondsPerState;
 
     fn start(&self) -> Self::Intermediate {
         reset_states_evaluated();
@@ -36,20 +81,19 @@ impl Measurement for SecondsPerState {
 
     fn end(&self, start: Self::Intermediate) -> Self::Value {
         let states = get_states_evaluated();
-        (start.elapsed().as_secs_f64(), states, 1)
+        SecondsPerState::new(start.elapsed().as_secs_f64(), states, 1)
     }
 
     fn add(&self, v0: &Self::Value, v1: &Self::Value) -> Self::Value {
-        (v0.0 + v1.0, v0.1 + v1.1, v0.2 + v1.2)
+        v0 + v1
     }
 
     fn zero(&self) -> Self::Value {
-        (0.0, 0, 0)
+        SecondsPerState::zero()
     }
 
     fn to_f64(&self, val: &Self::Value) -> f64 {
-        println!("{val:?}");
-        val.0 * val.2 as f64 / val.1 as f64
+        val.to_f64()
     }
 
     fn formatter(&self) -> &dyn ValueFormatter {
@@ -95,7 +139,7 @@ impl ValueFormatter for StatesPerSecondFormatter {
     }
 }
 
-fn bench_positions_per_second(c: &mut Criterion<SecondsPerState>) {
+fn bench_positions_per_second(c: &mut Criterion<SecondsPerStateMeasurement>) {
     let board = vec![
         "   O   ",
         "   X   ",
@@ -105,7 +149,7 @@ fn bench_positions_per_second(c: &mut Criterion<SecondsPerState>) {
         "XXOXOX ",
     ];
 
-    let evaluate_position = software_testing_project::threads::evaluate_position;
+    let evaluate_position = software_testing_project::naive::evaluate_position;
 
     let mut group = c.benchmark_group("positions_per_second_group");
     group.sample_size(10);
@@ -129,7 +173,7 @@ fn bench_positions_per_second(c: &mut Criterion<SecondsPerState>) {
 
 criterion_group! {
     name = benches;
-    config = Criterion::default().with_measurement(SecondsPerState);
+    config = Criterion::default().with_measurement(SecondsPerStateMeasurement);
     targets = bench_positions_per_second
 }
 
