@@ -1,8 +1,8 @@
 use std::cmp::{max, min};
 use std::collections::HashMap;
-use crate::naive;
-use crate::state::State;
-use crate::evaluate_position_util::{EvaluatePositionReturn, DRAW, LOSS, WIN};
+use crate::connect_four::evaluate_position_util::{EvaluatePositionReturn, DRAW, LOSS, WIN};
+use crate::connect_four::naive;
+use crate::connect_four::state::State;
 
 struct GlobalState {
     cache: StateCache,

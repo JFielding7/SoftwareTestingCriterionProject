@@ -1,8 +1,7 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 use std::hint::black_box;
 use criterion::BatchSize::SmallInput;
-use software_testing_project;
-use software_testing_project::state::State;
+use software_testing_project::connect_four::state::State;
 
 fn bench_total_time(c: &mut Criterion) {
     let board = vec![
@@ -14,7 +13,7 @@ fn bench_total_time(c: &mut Criterion) {
         "XXOXOX ",
     ];
 
-    let evaluate_position = software_testing_project::threads::evaluate_position;
+    let evaluate_position = software_testing_project::connect_four::threads::evaluate_position;
 
     let mut group = c.benchmark_group("total_time_group");
     group.sample_size(10);

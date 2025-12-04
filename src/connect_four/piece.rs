@@ -1,4 +1,4 @@
-use crate::piece::Piece::{EMPTY, FIRST, SECOND};
+use crate::connect_four::piece::Piece::{EMPTY, FIRST, SECOND};
 
 #[derive(Clone)]
 #[derive(Copy)]

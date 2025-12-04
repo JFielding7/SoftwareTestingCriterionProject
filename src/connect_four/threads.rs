@@ -4,9 +4,9 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::thread::JoinHandle;
 use dashmap::DashMap;
-use crate::naive;
-use crate::state::State;
-use crate::evaluate_position_util::{EvaluatePositionReturn, DRAW, LOSS, WIN};
+use crate::connect_four::evaluate_position_util::{EvaluatePositionReturn, DRAW, LOSS, WIN};
+use crate::connect_four::naive;
+use crate::connect_four::state::State;
 
 struct ThreadLocalContext {
     states_evaluated: usize,

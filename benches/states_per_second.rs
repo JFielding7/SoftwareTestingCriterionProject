@@ -4,8 +4,7 @@ use std::time::Instant;
 use criterion::measurement::{Measurement, ValueFormatter};
 use criterion::{criterion_group, criterion_main, Criterion, Throughput};
 use criterion::BatchSize::SmallInput;
-use software_testing_project::state::State;
-
+use software_testing_project::connect_four::state::State;
 
 thread_local! {
     static STATES_EVALUATED: Cell<usize> = Cell::new(0);
@@ -105,7 +104,7 @@ fn bench_positions_per_second(c: &mut Criterion<SecondsPerState>) {
         "XXOXOX ",
     ];
 
-    let evaluate_position = software_testing_project::threads::evaluate_position;
+    let evaluate_position = software_testing_project::connect_four::threads::evaluate_position;
 
     let mut group = c.benchmark_group("positions_per_second_group");
     group.sample_size(10);

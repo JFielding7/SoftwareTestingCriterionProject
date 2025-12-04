@@ -1,6 +1,6 @@
 use std::cmp::{max};
-use crate::state::State;
-use crate::evaluate_position_util::{EvaluatePositionReturn, DRAW, LOSS, WIN};
+use crate::connect_four::evaluate_position_util::{EvaluatePositionReturn, DRAW, LOSS, WIN};
+use crate::connect_four::state::State;
 
 pub fn evaluate_position_rec(
     state: State,

@@ -1,6 +1,6 @@
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
-use software_testing_project::example_min::{multi_threaded_min_fast, multi_threaded_min_slow};
 use std::hint::black_box;
+use software_testing_project::connect_four::example_min::{multi_threaded_min_fast, multi_threaded_min_slow};
 
 const MAX_THREADS: usize = 8;
 

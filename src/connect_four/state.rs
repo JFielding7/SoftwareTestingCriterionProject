@@ -1,7 +1,7 @@
+use crate::connect_four::piece::Piece;
+use crate::connect_four::piece::Piece::{EMPTY, FIRST, SECOND};
 use std::fmt;
-use std::hash::{DefaultHasher, Hash, Hasher};
-use crate::piece::Piece;
-use crate::piece::Piece::{EMPTY, FIRST, SECOND};
+use std::hash::{Hash, Hasher};
 
 const ROWS: usize = 6;
 const COLS: usize = 7;
