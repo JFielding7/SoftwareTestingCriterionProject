@@ -1,15 +1,17 @@
 use std::cmp::{max, min};
 use std::collections::HashMap;
-use crate::connect_four::evaluate_position_util::{EvaluatePositionReturn, DRAW, LOSS, WIN};
+use crate::connect_four::solver_util::{EvaluatePositionReturn, DRAW, WORST_EVAL, BEST_EVAL};
 use crate::connect_four::naive;
 use crate::connect_four::state::State;
 
-struct GlobalState {
-    cache: StateCache,
+const MAX_CACHED_DEPTH: usize = 42;
+
+struct GlobalState<S: State> {
+    cache: StateCache<S>,
     positions_evaluated: usize
 }
 
-impl GlobalState {
+impl<S: State> GlobalState<S> {
     fn new() -> Self {
         Self {
             cache: StateCache::new(),
@@ -18,12 +20,12 @@ impl GlobalState {
     }
 }
 
-struct StateCache {
-    alpha_cache: HashMap<State, i32>,
-    beta_cache: HashMap<State, i32>,
+struct StateCache<S: State> {
+    alpha_cache: HashMap<S, i32>,
+    beta_cache: HashMap<S, i32>,
 }
 
-impl StateCache {
+impl<S: State> StateCache<S> {
     fn new() -> Self {
         Self {
             alpha_cache: HashMap::new(),
@@ -31,30 +33,28 @@ impl StateCache {
         }
     }
 
-    fn insert_alpha_bound(&mut self, state: State, bound: i32) {
+    fn insert_alpha_bound(&mut self, state: S, bound: i32) {
         self.alpha_cache.insert(state, bound);
     }
 
-    fn insert_beta_bound(&mut self, state: State, bound: i32) {
+    fn insert_beta_bound(&mut self, state: S, bound: i32) {
         self.beta_cache.insert(state, bound);
     }
 
-    fn fetch_alpha_bound(&mut self, state: &State) -> i32 {
-        *self.alpha_cache.get(state).unwrap_or(&LOSS)
+    fn fetch_alpha_bound(&mut self, state: &S) -> i32 {
+        *self.alpha_cache.get(state).unwrap_or(&WORST_EVAL)
     }
 
-    fn fetch_beta_bound(&mut self, state: &State) -> i32 {
-        *self.beta_cache.get(state).unwrap_or(&WIN)
+    fn fetch_beta_bound(&mut self, state: &S) -> i32 {
+        *self.beta_cache.get(state).unwrap_or(&BEST_EVAL)
     }
 }
 
-const MAX_CACHED_DEPTH: usize = 35;
-
-fn evaluate_position_rec(
-    state: State,
+fn evaluate_position_rec<S: State>(
+    state: S,
     mut alpha: i32,
     mut beta: i32,
-    global_state: &mut GlobalState
+    global_state: &mut GlobalState<S>
 ) -> i32 {
 
     if state.moves_made() > MAX_CACHED_DEPTH {
@@ -77,6 +77,8 @@ fn evaluate_position_rec(
         if next_state.is_win() {
             return state.max_eval();
         }
+
+        alpha = max(alpha, -global_state.cache.fetch_beta_bound(next_state));
     }
 
     for next_state in next_states {
@@ -100,11 +102,11 @@ fn evaluate_position_rec(
     alpha
 }
 
-pub fn evaluate_position(state: State) -> EvaluatePositionReturn {
+pub fn evaluate_position<S: State>(state: S) -> EvaluatePositionReturn {
 
     let mut global_state = GlobalState::new();
 
-    let eval = evaluate_position_rec(state, LOSS, WIN, &mut global_state);
+    let eval = evaluate_position_rec(state, WORST_EVAL, BEST_EVAL, &mut global_state);
 
     EvaluatePositionReturn::new(eval, global_state.positions_evaluated)
 }

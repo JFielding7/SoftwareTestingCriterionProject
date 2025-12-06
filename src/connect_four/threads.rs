@@ -4,13 +4,17 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::thread::JoinHandle;
 use dashmap::DashMap;
-use crate::connect_four::evaluate_position_util::{EvaluatePositionReturn, DRAW, LOSS, WIN};
+use crate::connect_four::solver_util::{EvaluatePositionReturn, DRAW, WORST_EVAL, BEST_EVAL};
 use crate::connect_four::naive;
 use crate::connect_four::state::State;
 
-struct ThreadLocalContext {
+
+const MAX_CACHED_DEPTH: usize = 35;
+
+struct ThreadContext<S: State> {
     states_evaluated: usize,
     terminate_signal: Arc<AtomicBool>,
+    cache: Arc<SharedStateCache<S>>,
 }
 
 struct HelperThreadHandler {
@@ -18,12 +22,12 @@ struct HelperThreadHandler {
     terminate_signal: Arc<AtomicBool>,
 }
 
-struct SharedStateCache {
-    alpha_cache: DashMap<State, i32>,
-    beta_cache: DashMap<State, i32>,
+struct SharedStateCache<S: State> {
+    alpha_cache: DashMap<S, i32>,
+    beta_cache: DashMap<S, i32>,
 }
 
-impl SharedStateCache {
+impl<S: State> SharedStateCache<S> {
     fn new() -> Self {
         Self {
             alpha_cache: DashMap::new(),
@@ -31,49 +35,46 @@ impl SharedStateCache {
         }
     }
 
-    fn insert_alpha_bound(&self, state: State, bound: i32) {
+    fn insert_alpha_bound(&self, state: S, bound: i32) {
         self.alpha_cache.insert(state, bound);
     }
 
-    fn insert_beta_bound(&self, state: State, bound: i32) {
+    fn insert_beta_bound(&self, state: S, bound: i32) {
         self.beta_cache.insert(state, bound);
     }
 
-    fn fetch_alpha_bound(&self, state: &State) -> i32 {
-        *self.alpha_cache.get(state).as_deref().unwrap_or(&LOSS)
+    fn fetch_alpha_bound(&self, state: &S) -> i32 {
+        *self.alpha_cache.get(state).as_deref().unwrap_or(&WORST_EVAL)
     }
 
-    fn fetch_beta_bound(&self, state: &State) -> i32 {
-        *self.beta_cache.get(state).as_deref().unwrap_or(&WIN)
+    fn fetch_beta_bound(&self, state: &S) -> i32 {
+        *self.beta_cache.get(state).as_deref().unwrap_or(&BEST_EVAL)
     }
 }
 
-const MAX_CACHED_DEPTH: usize = 35;
-
-fn evaluate_position_rec(
-    state: State,
+fn evaluate_position_rec<S: State>(
+    state: S,
     mut alpha: i32,
     mut beta: i32,
-    thread_local_context: &mut ThreadLocalContext,
-    cache: Arc<SharedStateCache>
+    ctx: &mut ThreadContext<S>,
 ) -> Option<i32> {
 
-    if thread_local_context.terminate_signal.load(Ordering::Relaxed) {
+    if ctx.terminate_signal.load(Ordering::Relaxed) {
         return None
     }
 
     if state.moves_made() > MAX_CACHED_DEPTH {
-        return Some(naive::evaluate_position_rec(state, alpha, beta, &mut thread_local_context.states_evaluated));
+        return Some(naive::evaluate_position_rec(state, alpha, beta, &mut ctx.states_evaluated));
     }
 
-    thread_local_context.states_evaluated += 1;
+    ctx.states_evaluated += 1;
 
     if state.board_full() {
         return Some(DRAW);
     }
 
-    alpha = max(alpha, cache.fetch_alpha_bound(&state));
-    beta = min(beta, cache.fetch_beta_bound(&state));
+    alpha = max(alpha, ctx.cache.fetch_alpha_bound(&state));
+    beta = min(beta, ctx.cache.fetch_beta_bound(&state));
 
     let next_states = state.next_states();
 
@@ -82,6 +83,8 @@ fn evaluate_position_rec(
         if next_state.is_win() {
             return Some(state.max_eval());
         }
+
+        alpha = max(alpha, -ctx.cache.fetch_beta_bound(next_state));
     }
 
     for next_state in next_states {
@@ -90,38 +93,38 @@ fn evaluate_position_rec(
             next_state,
             -beta,
             -alpha,
-            thread_local_context,
-            cache.clone(),
+            ctx,
         )?;
 
         alpha = max(alpha, eval);
 
         if alpha >= beta {
-            cache.insert_alpha_bound(state, alpha);
+            ctx.cache.insert_alpha_bound(state, alpha);
             return Some(alpha);
         }
     }
 
-    cache.insert_beta_bound(state, alpha);
+    ctx.cache.insert_beta_bound(state, alpha);
     Some(alpha)
 }
 
-pub fn evaluate_position(state: State) -> EvaluatePositionReturn {
+pub fn evaluate_position<S: State>(state: S) -> EvaluatePositionReturn {
 
     let cache = Arc::new(SharedStateCache::new());
     let mut handlers = vec![];
 
     for next_state in state.next_states() {
         let terminate_signal = Arc::new(AtomicBool::new(false));
-        let cache_clone = cache.clone();
 
-        let mut ctx = ThreadLocalContext {
+        let mut ctx = ThreadContext {
             terminate_signal: terminate_signal.clone(),
-            states_evaluated: 0
+            states_evaluated: 0,
+            cache: cache.clone()
         };
 
         let handle = thread::spawn(move || {
-            evaluate_position_rec(next_state, LOSS, WIN, &mut ctx, cache_clone);
+            const HELPER_THREAD_BETA: i32 = 1; // this significantly affects performance
+            evaluate_position_rec(next_state, -HELPER_THREAD_BETA, HELPER_THREAD_BETA, &mut ctx);
             ctx.states_evaluated
         });
 
@@ -131,12 +134,13 @@ pub fn evaluate_position(state: State) -> EvaluatePositionReturn {
         })
     }
 
-    let mut master_thread_ctx = ThreadLocalContext {
+    let mut master_thread_ctx = ThreadContext {
         terminate_signal: Arc::new(AtomicBool::new(false)),
-        states_evaluated: 0
+        states_evaluated: 0,
+        cache
     };
 
-    let eval = evaluate_position_rec(state, LOSS, WIN, &mut master_thread_ctx, cache).unwrap();
+    let eval = evaluate_position_rec(state, WORST_EVAL, BEST_EVAL, &mut master_thread_ctx).unwrap();
 
     for handler in &handlers {
         handler.terminate_signal.store(true, Ordering::Relaxed);

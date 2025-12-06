@@ -5,7 +5,10 @@ use std::time::Instant;
 use criterion::measurement::{Measurement, ValueFormatter};
 use criterion::{criterion_group, criterion_main, Criterion, Throughput};
 use criterion::BatchSize::SmallInput;
+use software_testing_project::connect_four;
+use software_testing_project::connect_four::state_array::StateArray;
 use software_testing_project::connect_four::state::State;
+use software_testing_project::connect_four::state_bitboard::StateBitboard;
 
 thread_local! {
     static STATES_EVALUATED: Cell<usize> = Cell::new(0);
@@ -138,24 +141,72 @@ impl ValueFormatter for StatesPerSecondFormatter {
     }
 }
 
-fn bench_positions_per_second(c: &mut Criterion<SecondsPerStateMeasurement>) {
-    let board = vec![
+fn bench_example_pps(c: &mut Criterion<SecondsPerStateMeasurement>) {
+    let board = [
         "   O   ",
         "   X   ",
         "   O X ",
         "   X O ",
         "  XO O ",
         "XXOXOX ",
-    ];
+    ].map(|row| row.to_string()).into_iter().collect();
 
-    let evaluate_position = software_testing_project::connect_four::naive::evaluate_position;
+    let evaluate_position = connect_four::cache_strategy::evaluate_position;
 
-    let mut group = c.benchmark_group("positions_per_second_group");
+    let mut group = c.benchmark_group("example_sps");
     group.sample_size(10);
 
     group.bench_function("evaluate_position", |bencher| {
         bencher.iter_batched(
-            || State::encode(&board),
+            || StateArray::encode(&board),
+            |state| {
+                let ret = evaluate_position(black_box(state));
+                add_states_evaluated(ret.states_evaluated);
+
+                println!("States Evaluated: {}", ret.states_evaluated);
+                println!("Total Eval: {}", ret.eval);
+            },
+            SmallInput,
+        )
+    });
+
+    group.finish();
+}
+
+fn bench_array_vs_bitboard_pps(c: &mut Criterion<SecondsPerStateMeasurement>) {
+    let board = [
+        "   O   ",
+        "   X   ",
+        "   O X ",
+        "   X O ",
+        "  XO O ",
+        "XXOXOX ",
+    ].map(|row| row.to_string()).into_iter().collect();
+
+    let mut group = c.benchmark_group("array_vs_bitboard_pps");
+    group.sample_size(10);
+
+    let evaluate_position = connect_four::naive::evaluate_position;
+
+    group.bench_function("array", |bencher| {
+        bencher.iter_batched(
+            || StateArray::encode(&board),
+            |state| {
+                let ret = evaluate_position(black_box(state));
+                add_states_evaluated(ret.states_evaluated);
+
+                println!("States Evaluated: {}", ret.states_evaluated);
+                println!("Total Eval: {}", ret.eval);
+            },
+            SmallInput,
+        )
+    });
+
+    let evaluate_position = connect_four::naive::evaluate_position;
+
+    group.bench_function("bitboard", |bencher| {
+        bencher.iter_batched(
+            || StateBitboard::encode(&board),
             |state| {
                 let ret = evaluate_position(black_box(state));
                 add_states_evaluated(ret.states_evaluated);
@@ -173,7 +224,7 @@ fn bench_positions_per_second(c: &mut Criterion<SecondsPerStateMeasurement>) {
 criterion_group! {
     name = benches;
     config = Criterion::default().with_measurement(SecondsPerStateMeasurement);
-    targets = bench_positions_per_second
+    targets = bench_example_pps, bench_array_vs_bitboard_pps
 }
 
 criterion_main!(benches);

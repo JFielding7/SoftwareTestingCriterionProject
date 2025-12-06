@@ -1,9 +1,10 @@
 use std::cmp::{max};
-use crate::connect_four::evaluate_position_util::{EvaluatePositionReturn, DRAW, LOSS, WIN};
+use crate::connect_four::solver_util::{EvaluatePositionReturn, DRAW, WORST_EVAL, BEST_EVAL};
 use crate::connect_four::state::State;
 
-pub fn evaluate_position_rec(
-    state: State,
+
+pub fn evaluate_position_rec<S: State>(
+    state: S,
     mut alpha: i32,
     beta: i32,
     positions_evaluated: &mut usize,
@@ -43,9 +44,9 @@ pub fn evaluate_position_rec(
     alpha
 }
 
-pub fn evaluate_position(state: State) -> EvaluatePositionReturn {
+pub fn evaluate_position<S: State>(state: S) -> EvaluatePositionReturn {
     let mut states_evaluated = 0;
-    let eval = evaluate_position_rec(state, LOSS, WIN, &mut states_evaluated);
+    let eval = evaluate_position_rec(state, WORST_EVAL, BEST_EVAL, &mut states_evaluated);
 
     EvaluatePositionReturn::new(eval, states_evaluated)
 }

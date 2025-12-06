@@ -1,8 +1,6 @@
 use crate::connect_four::piece::Piece::{EMPTY, FIRST, SECOND};
 
-#[derive(Clone)]
-#[derive(Copy)]
-#[derive(Eq, PartialEq, Hash)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Piece {
     EMPTY,
     FIRST,
@@ -24,7 +22,7 @@ impl Piece {
         self != &EMPTY
     }
 
-    pub fn hash(&self, mut cell: usize) -> u64 {
+    pub fn hash(&self, curr_hash: u64, mut cell: usize) -> u64 {
         let val = match self {
             EMPTY => return 0,
             FIRST => 1,
@@ -35,9 +33,7 @@ impl Piece {
         let mut curr_pow = cell as u64;
 
         while cell != 0 {
-
-            // println!("{cell}");
-
+            
             if (cell & 1) == 1 {
                 hash_pow = (hash_pow * curr_pow) % HASH_MOD;
             }
@@ -46,6 +42,6 @@ impl Piece {
             cell >>= 1;
         }
 
-        (val * hash_pow) % HASH_MOD
+        (curr_hash + val * hash_pow) % HASH_MOD
     }
 }
