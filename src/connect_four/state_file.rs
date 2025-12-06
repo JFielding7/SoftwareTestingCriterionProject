@@ -1,9 +1,12 @@
+use std::{io};
 use std::fs::File;
-use std::io;
 use std::io::BufRead;
 use std::path::Path;
+use crate::connect_four::cache_strategy::optimal_next_state;
 use crate::connect_four::solver_util::ROWS;
 use crate::connect_four::state::State;
+use crate::connect_four::state_bitboard::StateBitboard;
+use std::io::Write;
 
 pub fn read_state_file<S: State>(depth: usize) -> io::Result<Vec<S>> {
 
@@ -26,4 +29,26 @@ pub fn read_state_file<S: State>(depth: usize) -> io::Result<Vec<S>> {
     }
 
     Ok(states)
+}
+
+pub fn generate_state_file(depth: usize) -> io::Result<()> {
+
+    let prev_states: Vec<StateBitboard> = read_state_file(depth - 1)?;
+    let mut states = vec![];
+
+    for state in prev_states {
+        println!("{state}");
+
+        let optimal_state = optimal_next_state(state);
+
+        states.push(optimal_state);
+    }
+
+    let mut path = File::create(format!("positions/positions{depth}"))?;
+
+    for state in states {
+        write!(path, "{}", state.decode())?;
+    }
+
+    Ok(())
 }

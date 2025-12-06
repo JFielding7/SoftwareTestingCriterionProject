@@ -1,4 +1,4 @@
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, AxisScale, BenchmarkId, Criterion, PlotConfiguration};
 use std::hint::black_box;
 use criterion::BatchSize::SmallInput;
 use software_testing_project::connect_four;
@@ -7,7 +7,7 @@ use software_testing_project::connect_four::state::State;
 use software_testing_project::connect_four::state_bitboard::StateBitboard;
 use software_testing_project::connect_four::state_file::read_state_file;
 
-fn example_position_bench(c: &mut Criterion) {
+fn example_state_bench(c: &mut Criterion) {
     let board = [
         "   O   ",
         "   X   ",
@@ -21,7 +21,7 @@ fn example_position_bench(c: &mut Criterion) {
 
     let evaluate_position = connect_four::threads::evaluate_position;
 
-    let mut group = c.benchmark_group("total_time_group");
+    let mut group = c.benchmark_group("example_state");
     group.sample_size(10);
 
     group.bench_function("evaluate_position", |bencher| {
@@ -38,7 +38,7 @@ fn example_position_bench(c: &mut Criterion) {
     group.finish();
 }
 
-fn multiple_position_same_depth_bench(c: &mut Criterion) {
+fn multiple_states_same_depth_bench(c: &mut Criterion) {
     const DEPTH: usize = 12;
     type StateType = StateArray;
 
@@ -46,7 +46,7 @@ fn multiple_position_same_depth_bench(c: &mut Criterion) {
 
     let evaluate_position = connect_four::threads::evaluate_position;
 
-    let mut group = c.benchmark_group("multiple_position");
+    let mut group = c.benchmark_group("multiple_states_same_depth");
     group.sample_size(10);
 
     group.bench_function("evaluate_position", |bencher| {
@@ -54,7 +54,7 @@ fn multiple_position_same_depth_bench(c: &mut Criterion) {
             || states.clone(),
             |cloned_states| {
                 for state in black_box(cloned_states) {
-                    evaluate_position(state.clone());
+                    evaluate_position(state);
                 }
             },
             SmallInput
@@ -64,19 +64,26 @@ fn multiple_position_same_depth_bench(c: &mut Criterion) {
     group.finish();
 }
 
-fn all_depths_bench(c: &mut Criterion) {
-    const MIN_DEPTH: usize = 12;
-    type StateType = StateArray;
+fn multiple_depths_bench(c: &mut Criterion) {
+    const MIN_DEPTH: usize = 20;
+    const MAX_DEPTH: usize = 30;
 
-    let evaluate_position = connect_four::threads::evaluate_position;
+    type StateType = StateBitboard;
+    let evaluate_position = connect_four::cache_strategy::evaluate_position;
 
-    let mut group = c.benchmark_group("all_depths");
+    let mut group = c.benchmark_group("multiple_depths");
+
     group.sample_size(10);
 
-    for depth in MIN_DEPTH..42 {
+    group.plot_config(
+        PlotConfiguration::default()
+        .summary_scale(AxisScale::Logarithmic)
+    );
+
+    for depth in MIN_DEPTH..=MAX_DEPTH {
         let states: Vec<StateType> = read_state_file(depth).unwrap();
 
-        group.bench_function("evaluate_position", |bencher| {
+        group.bench_function(BenchmarkId::new("evaluate_position", depth), |bencher| {
             bencher.iter_batched(
                 || states.iter().map(|s| s.clone()).collect::<Vec<StateType>>(),
                 |curr_states| {
@@ -92,5 +99,5 @@ fn all_depths_bench(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, example_position_bench, multiple_position_same_depth_bench);
+criterion_group!(benches, example_state_bench, multiple_states_same_depth_bench, multiple_depths_bench);
 criterion_main!(benches);

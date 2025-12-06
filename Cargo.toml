@@ -16,11 +16,11 @@ name = "example_min"
 harness = false
 
 [[bench]]
-name = "total_time"
+name = "connect4_time"
 harness = false
 
 [[bench]]
-name = "states_per_second"
+name = "connect4_states_per_second"
 harness = false
 
 [[bench]]

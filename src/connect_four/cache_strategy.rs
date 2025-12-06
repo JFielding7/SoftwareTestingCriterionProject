@@ -110,3 +110,20 @@ pub fn evaluate_position<S: State>(state: S) -> EvaluatePositionReturn {
 
     EvaluatePositionReturn::new(eval, global_state.positions_evaluated)
 }
+
+pub fn optimal_next_state<S: State>(state: S) -> S {
+    let mut global_state = GlobalState::new();
+    let mut max_eval = WORST_EVAL;
+    let mut optimal_state = state.clone();
+
+    for next_state in state.next_states() {
+        let eval = evaluate_position_rec(next_state.clone(), max_eval, BEST_EVAL, &mut global_state);
+
+        if eval > max_eval {
+            max_eval = eval;
+            optimal_state = next_state.clone();
+        }
+    }
+
+    optimal_state
+}
