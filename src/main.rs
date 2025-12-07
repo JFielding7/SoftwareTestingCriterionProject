@@ -1,12 +1,18 @@
 use std::io;
-use crate::connect_four::state_file::generate_state_file;
+use software_testing_project::sorts::sorts::{heapsort, mergesort, quicksort, timsort};
+use rand::{rng, Rng};
+use rand_pcg::Pcg64;
 
 mod connect_four;
 
 fn main() -> io::Result<()> {
-    // for i in 16..=40 {
-    //     generate_state_file(i)?;
-    // }
+    let mut vec: Vec<i32> = (0..10000000)
+        .map(|_| rng().random::<i32>())
+        .collect();
+
+    timsort(&mut vec);
+
+    println!("{:?}", vec.is_sorted());
 
     Ok(())
 }

@@ -141,7 +141,7 @@ impl ValueFormatter for StatesPerSecondFormatter {
     }
 }
 
-fn bench_example_pps(c: &mut Criterion<SecondsPerStateMeasurement>) {
+fn bench_example_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     let board = [
         "   O   ",
         "   X   ",
@@ -173,7 +173,7 @@ fn bench_example_pps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     group.finish();
 }
 
-fn bench_array_vs_bitboard_pps(c: &mut Criterion<SecondsPerStateMeasurement>) {
+fn bench_array_vs_bitboard_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     let board = [
         "   O   ",
         "   X   ",
@@ -224,7 +224,7 @@ fn bench_array_vs_bitboard_pps(c: &mut Criterion<SecondsPerStateMeasurement>) {
 criterion_group! {
     name = benches;
     config = Criterion::default().with_measurement(SecondsPerStateMeasurement);
-    targets = bench_example_pps, bench_array_vs_bitboard_pps
+    targets = bench_example_sps, bench_array_vs_bitboard_sps
 }
 
 criterion_main!(benches);
