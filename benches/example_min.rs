@@ -59,6 +59,7 @@ fn min_different_threads(c: &mut Criterion) {
             );
         }
     }
+    
     group.finish();
 }
 

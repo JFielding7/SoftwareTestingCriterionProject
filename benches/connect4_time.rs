@@ -7,7 +7,7 @@ use software_testing_project::connect_four::state::State;
 use software_testing_project::connect_four::state_bitboard::StateBitboard;
 use software_testing_project::connect_four::state_file::read_state_file;
 
-fn example_state_bench(c: &mut Criterion) {
+fn example_state(c: &mut Criterion) {
     let board = [
         "   O   ",
         "   X   ",
@@ -38,7 +38,7 @@ fn example_state_bench(c: &mut Criterion) {
     group.finish();
 }
 
-fn multiple_states_same_depth_bench(c: &mut Criterion) {
+fn multiple_states_same_depth(c: &mut Criterion) {
     const DEPTH: usize = 12;
     type StateType = StateArray;
 
@@ -64,7 +64,7 @@ fn multiple_states_same_depth_bench(c: &mut Criterion) {
     group.finish();
 }
 
-fn multiple_depths_bench(c: &mut Criterion) {
+fn multiple_depths(c: &mut Criterion) {
     const MIN_DEPTH: usize = 20;
     const MAX_DEPTH: usize = 30;
 
@@ -99,5 +99,5 @@ fn multiple_depths_bench(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, example_state_bench, multiple_states_same_depth_bench, multiple_depths_bench);
+criterion_group!(benches, example_state, multiple_states_same_depth, multiple_depths);
 criterion_main!(benches);

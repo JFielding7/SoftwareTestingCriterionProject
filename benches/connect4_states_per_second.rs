@@ -3,12 +3,13 @@ use std::hint::black_box;
 use std::ops::Add;
 use std::time::Instant;
 use criterion::measurement::{Measurement, ValueFormatter};
-use criterion::{criterion_group, criterion_main, Criterion, Throughput};
+use criterion::{criterion_group, criterion_main, AxisScale, BenchmarkId, Criterion, PlotConfiguration, Throughput};
 use criterion::BatchSize::SmallInput;
 use software_testing_project::connect_four;
 use software_testing_project::connect_four::state_array::StateArray;
 use software_testing_project::connect_four::state::State;
 use software_testing_project::connect_four::state_bitboard::StateBitboard;
+use software_testing_project::connect_four::state_file::read_state_file;
 
 thread_local! {
     static STATES_EVALUATED: Cell<usize> = Cell::new(0);
@@ -141,7 +142,7 @@ impl ValueFormatter for StatesPerSecondFormatter {
     }
 }
 
-fn bench_example_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
+fn example_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     let board = [
         "   O   ",
         "   X   ",
@@ -151,6 +152,7 @@ fn bench_example_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
         "XXOXOX ",
     ].map(|row| row.to_string()).into_iter().collect();
 
+    type StateType = StateBitboard;
     let evaluate_position = connect_four::cache_strategy::evaluate_position;
 
     let mut group = c.benchmark_group("example_sps");
@@ -158,7 +160,7 @@ fn bench_example_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
 
     group.bench_function("evaluate_position", |bencher| {
         bencher.iter_batched(
-            || StateArray::encode(&board),
+            || StateType::encode(&board),
             |state| {
                 let ret = evaluate_position(black_box(state));
                 add_states_evaluated(ret.states_evaluated);
@@ -173,7 +175,7 @@ fn bench_example_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     group.finish();
 }
 
-fn bench_array_vs_bitboard_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
+fn array_vs_bitboard_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     let board = [
         "   O   ",
         "   X   ",
@@ -186,13 +188,13 @@ fn bench_array_vs_bitboard_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     let mut group = c.benchmark_group("array_vs_bitboard_pps");
     group.sample_size(10);
 
-    let evaluate_position = connect_four::naive::evaluate_position;
+    let evaluate_position_array = connect_four::naive::evaluate_position;
 
     group.bench_function("array", |bencher| {
         bencher.iter_batched(
             || StateArray::encode(&board),
             |state| {
-                let ret = evaluate_position(black_box(state));
+                let ret = evaluate_position_array(black_box(state));
                 add_states_evaluated(ret.states_evaluated);
 
                 println!("States Evaluated: {}", ret.states_evaluated);
@@ -202,13 +204,13 @@ fn bench_array_vs_bitboard_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
         )
     });
 
-    let evaluate_position = connect_four::naive::evaluate_position;
+    let evaluate_position_bitboard = connect_four::naive::evaluate_position;
 
     group.bench_function("bitboard", |bencher| {
         bencher.iter_batched(
             || StateBitboard::encode(&board),
             |state| {
-                let ret = evaluate_position(black_box(state));
+                let ret = evaluate_position_bitboard(black_box(state));
                 add_states_evaluated(ret.states_evaluated);
 
                 println!("States Evaluated: {}", ret.states_evaluated);
@@ -221,10 +223,45 @@ fn bench_array_vs_bitboard_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     group.finish();
 }
 
+fn multiple_depths_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
+    const MIN_DEPTH: usize = 20;
+    const MAX_DEPTH: usize = 30;
+
+    type StateType = StateBitboard;
+    let evaluate_position = connect_four::cache_strategy::evaluate_position;
+
+    let mut group = c.benchmark_group("multiple_depths_sps");
+
+    group.sample_size(10);
+
+    group.plot_config(
+        PlotConfiguration::default()
+            .summary_scale(AxisScale::Logarithmic)
+    );
+
+    for depth in MIN_DEPTH..=MAX_DEPTH {
+        let states: Vec<StateType> = read_state_file(depth).unwrap();
+
+        group.bench_function(BenchmarkId::new("evaluate_position", depth), |bencher| {
+            bencher.iter_batched(
+                || states.iter().map(|s| s.clone()).collect::<Vec<StateType>>(),
+                |curr_states| {
+                    for state in curr_states {
+                        evaluate_position(black_box(state));
+                    }
+                },
+                SmallInput
+            )
+        });
+    }
+
+    group.finish();
+}
+
 criterion_group! {
     name = benches;
     config = Criterion::default().with_measurement(SecondsPerStateMeasurement);
-    targets = bench_example_sps, bench_array_vs_bitboard_sps
+    targets = example_sps, array_vs_bitboard_sps, multiple_depths_sps
 }
 
 criterion_main!(benches);
