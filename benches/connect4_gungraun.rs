@@ -9,7 +9,7 @@ use software_testing_project::connect_four::state_bitboard::StateBitboard;
 
 type StateType = StateArray;
 
-fn create_state<S: State>() -> (S, fn(S) -> EvaluatePositionReturn) {
+fn setup_input<S: State>() -> (S, fn(S) -> EvaluatePositionReturn) {
     let board = [
         "   O   ",
         "   X   ",
@@ -26,9 +26,9 @@ fn create_state<S: State>() -> (S, fn(S) -> EvaluatePositionReturn) {
 
 #[library_benchmark]
 #[bench::first(
-    setup = create_state::<StateType>,
+    setup = setup_input::<StateType>,
 )]
-fn bench_example_state<S: State>(
+fn bench_single_state<S: State>(
     (state, evaluate_position): (S, fn(S) -> EvaluatePositionReturn)
 ) -> EvaluatePositionReturn {
 
@@ -36,8 +36,8 @@ fn bench_example_state<S: State>(
 }
 
 library_benchmark_group!(
-    name = bench_example_state_group;
-    benchmarks = bench_example_state
+    name = bench_single_state_group;
+    benchmarks = bench_single_state
 );
 
 main!(
@@ -45,5 +45,5 @@ main!(
         .tool(Callgrind::default()
             .format([CallgrindMetrics::All])
         );
-    library_benchmark_groups = bench_example_state_group
+    library_benchmark_groups = bench_single_state_group
 );

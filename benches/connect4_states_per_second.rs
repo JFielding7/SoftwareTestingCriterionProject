@@ -11,7 +11,7 @@ use software_testing_project::connect_four::state::State;
 use software_testing_project::connect_four::state_bitboard::StateBitboard;
 use software_testing_project::connect_four::state_file::read_state_file;
 
-const DEFAULT_DEPTH: usize = 12;
+const DEFAULT_DEPTH: usize = 15;
 
 thread_local! {
     static STATES_EVALUATED: Cell<usize> = Cell::new(0);
@@ -144,17 +144,21 @@ impl ValueFormatter for StatesPerSecondFormatter {
     }
 }
 
-fn single_state(c: &mut Criterion<SecondsPerStateMeasurement>) {
-    let board = [
+fn default_board() -> Vec<String> {
+    [
         "   O   ",
         "   X   ",
         "   O X ",
         "   X O ",
         "  XO O ",
         "XXOXOX ",
-    ].map(|row| row.to_string()).into_iter().collect();
+    ].map(|row| row.to_string()).into_iter().collect()
+}
 
+fn single_state_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     type StateType = StateBitboard;
+    let state: StateType = StateType::encode(&default_board());
+
     let evaluate_position = connect_four::cache_strategy::evaluate_position;
 
     let mut group = c.benchmark_group("single_state_sps");
@@ -162,13 +166,10 @@ fn single_state(c: &mut Criterion<SecondsPerStateMeasurement>) {
 
     group.bench_function("evaluate_position", |bencher| {
         bencher.iter_batched(
-            || StateType::encode(&board),
+            || state.clone(),
             |state| {
                 let ret = evaluate_position(black_box(state));
                 add_states_evaluated(ret.states_evaluated);
-
-                println!("States Evaluated: {}", ret.states_evaluated);
-                println!("Total Eval: {}", ret.eval);
             },
             SmallInput,
         )
@@ -178,14 +179,7 @@ fn single_state(c: &mut Criterion<SecondsPerStateMeasurement>) {
 }
 
 fn array_vs_bitboard_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
-    let board = [
-        "   O   ",
-        "   X   ",
-        "   O X ",
-        "   X O ",
-        "  XO O ",
-        "XXOXOX ",
-    ].map(|row| row.to_string()).into_iter().collect();
+    let board = default_board();
 
     let mut group = c.benchmark_group("array_vs_bitboard_pps");
     group.sample_size(10);
@@ -219,12 +213,54 @@ fn array_vs_bitboard_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     group.finish();
 }
 
+fn different_methods_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
+    type StateType = StateBitboard;
+    let state = StateType::encode(&default_board());
+
+    let mut group = c.benchmark_group("different_methods_time");
+    group.sample_size(10);
+
+    group.bench_function("naive", |bencher| {
+        bencher.iter_batched(
+            || state.clone(),
+            |cloned_state| {
+                let ret = connect_four::naive::evaluate_position(cloned_state);
+                add_states_evaluated(ret.states_evaluated);
+            },
+            SmallInput
+        )
+    });
+
+    group.bench_function("caching", |bencher| {
+        bencher.iter_batched(
+            || state.clone(),
+            |cloned_state| {
+                let ret = connect_four::cache_strategy::evaluate_position(cloned_state);
+                add_states_evaluated(ret.states_evaluated);
+            },
+            SmallInput
+        )
+    });
+
+    group.bench_function("threads", |bencher| {
+        bencher.iter_batched(
+            || state.clone(),
+            |cloned_state| {
+                let ret = connect_four::threads::evaluate_position(cloned_state);
+                add_states_evaluated(ret.states_evaluated);
+            },
+            SmallInput
+        )
+    });
+
+    group.finish();
+}
+
 fn multiple_depths_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     const MIN_DEPTH: usize = DEFAULT_DEPTH;
     const MAX_DEPTH: usize = 30;
 
     type StateType = StateBitboard;
-    let evaluate_position = connect_four::threads::evaluate_position;
 
     let mut group = c.benchmark_group("multiple_depths_sps");
 
@@ -238,12 +274,39 @@ fn multiple_depths_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     for depth in MIN_DEPTH..=MAX_DEPTH {
         let states: Vec<StateType> = read_state_file(depth).unwrap();
 
-        group.bench_function(BenchmarkId::new("evaluate_position", depth), |bencher| {
+        group.bench_function(BenchmarkId::new("naive", depth), |bencher| {
             bencher.iter_batched(
-                || states.iter().map(|s| s.clone()).collect::<Vec<StateType>>(),
+                || states.clone(),
                 |curr_states| {
                     for state in curr_states {
-                        evaluate_position(black_box(state));
+                        let ret = connect_four::naive::evaluate_position(state);
+                        add_states_evaluated(ret.states_evaluated);
+                    }
+                },
+                SmallInput
+            )
+        });
+
+        group.bench_function(BenchmarkId::new("caching", depth), |bencher| {
+            bencher.iter_batched(
+                || states.clone(),
+                |curr_states| {
+                    for state in curr_states {
+                        let ret = connect_four::cache_strategy::evaluate_position(state);
+                        add_states_evaluated(ret.states_evaluated);
+                    }
+                },
+                SmallInput
+            )
+        });
+
+        group.bench_function(BenchmarkId::new("threads", depth), |bencher| {
+            bencher.iter_batched(
+                || states.clone(),
+                |curr_states| {
+                    for state in curr_states {
+                        let ret = connect_four::threads::evaluate_position(state);
+                        add_states_evaluated(ret.states_evaluated);
                     }
                 },
                 SmallInput
@@ -257,7 +320,7 @@ fn multiple_depths_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
 criterion_group! {
     name = benches;
     config = Criterion::default().with_measurement(SecondsPerStateMeasurement);
-    targets = single_state, array_vs_bitboard_sps, multiple_depths_sps
+    targets = single_state_sps, array_vs_bitboard_sps, different_methods_sps, multiple_depths_sps
 }
 
 criterion_main!(benches);

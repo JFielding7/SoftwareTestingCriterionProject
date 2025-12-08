@@ -46,66 +46,72 @@ fn bench_rulinalg(n: usize) {
 }
 
 fn matrix_mult_small(c: &mut Criterion) {
+    const SMALL_SIZE: usize = 4;
+
     let mut group = c.benchmark_group("matrix_mult_small");
 
     group.bench_function("nalgebra", |b| {
-        b.iter(|| bench_nalgebra(4))
+        b.iter(|| bench_nalgebra(SMALL_SIZE))
     });
 
     group.bench_function("ndarray", |b| {
-        b.iter(|| bench_ndarray(4))
+        b.iter(|| bench_ndarray(SMALL_SIZE))
     });
 
     group.bench_function("rulinalg", |b| {
-        b.iter(|| bench_rulinalg(4))
+        b.iter(|| bench_rulinalg(SMALL_SIZE))
     });
 
     group.bench_function("matrixmultiply", |b| {
-        b.iter(|| bench_matrixmultiply(4))
+        b.iter(|| bench_matrixmultiply(SMALL_SIZE))
     });
 
     group.finish();
 }
 
 fn matrix_mult_medium(c: &mut Criterion) {
+    const MEDIUM_SIZE: usize = 64;
+
     let mut group = c.benchmark_group("matrix_mult_medium");
 
     group.bench_function("nalgebra", |b| {
-        b.iter(|| bench_nalgebra(64))
+        b.iter(|| bench_nalgebra(MEDIUM_SIZE))
     });
 
     group.bench_function("ndarray", |b| {
-        b.iter(|| bench_ndarray(64))
+        b.iter(|| bench_ndarray(MEDIUM_SIZE))
     });
 
     group.bench_function("rulinalg", |b| {
-        b.iter(|| bench_rulinalg(64))
+        b.iter(|| bench_rulinalg(MEDIUM_SIZE))
     });
 
     group.bench_function("matrixmultiply", |b| {
-        b.iter(|| bench_matrixmultiply(64))
+        b.iter(|| bench_matrixmultiply(MEDIUM_SIZE))
     });
 
     group.finish();
 }
 
 fn matrix_mult_large(c: &mut Criterion) {
+    const LARGE_SIZE: usize = 256;
+
     let mut group = c.benchmark_group("matrix_mult_large");
 
     group.bench_function("nalgebra", |b| {
-        b.iter(|| bench_nalgebra(256))
+        b.iter(|| bench_nalgebra(LARGE_SIZE))
     });
 
     group.bench_function("ndarray", |b| {
-        b.iter(|| bench_ndarray(256))
+        b.iter(|| bench_ndarray(LARGE_SIZE))
     });
 
     group.bench_function("rulinalg", |b| {
-        b.iter(|| bench_rulinalg(256))
+        b.iter(|| bench_rulinalg(LARGE_SIZE))
     });
 
     group.bench_function("matrixmultiply", |b| {
-        b.iter(|| bench_matrixmultiply(256))
+        b.iter(|| bench_matrixmultiply(LARGE_SIZE))
     });
 
     group.finish();
