@@ -1,3 +1,3 @@
 pub mod connect_four;
-pub mod example_min;
+pub mod min;
 pub mod sorts;

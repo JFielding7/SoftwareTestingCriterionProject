@@ -25,7 +25,7 @@ debug = true
 strip = false
 
 [[bench]]
-name = "example_min"
+name = "min"
 harness = false
 
 [[bench]]

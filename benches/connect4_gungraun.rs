@@ -24,15 +24,9 @@ fn create_state<S: State>() -> (S, fn(S) -> EvaluatePositionReturn) {
     (S::encode(&board), evaluate_position)
 }
 
-fn display_statistics(ret: EvaluatePositionReturn) {
-    println!("Eval: {}", ret.eval);
-    println!("States Evaluated: {}", ret.states_evaluated);
-}
-
 #[library_benchmark]
 #[bench::first(
     setup = create_state::<StateType>,
-    teardown = display_statistics
 )]
 fn bench_example_state<S: State>(
     (state, evaluate_position): (S, fn(S) -> EvaluatePositionReturn)

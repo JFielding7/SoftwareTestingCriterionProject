@@ -7,7 +7,9 @@ use software_testing_project::connect_four::state::State;
 use software_testing_project::connect_four::state_bitboard::StateBitboard;
 use software_testing_project::connect_four::state_file::read_state_file;
 
-fn example_state(c: &mut Criterion) {
+const DEFAULT_DEPTH: usize = 12;
+
+fn example_state_time(c: &mut Criterion) {
     let board = [
         "   O   ",
         "   X   ",
@@ -21,7 +23,7 @@ fn example_state(c: &mut Criterion) {
 
     let evaluate_position = connect_four::threads::evaluate_position;
 
-    let mut group = c.benchmark_group("example_state");
+    let mut group = c.benchmark_group("example_state_time");
     group.sample_size(10);
 
     group.bench_function("evaluate_position", |bencher| {
@@ -38,23 +40,33 @@ fn example_state(c: &mut Criterion) {
     group.finish();
 }
 
-fn multiple_states_same_depth(c: &mut Criterion) {
-    const DEPTH: usize = 12;
-    type StateType = StateArray;
+fn array_vs_bitboard_time(c: &mut Criterion) {
 
-    let states: Vec<StateType> = read_state_file(DEPTH).unwrap();
-
-    let evaluate_position = connect_four::threads::evaluate_position;
-
-    let mut group = c.benchmark_group("multiple_states_same_depth");
+    let mut group = c.benchmark_group("array_vs_bitboard_time");
     group.sample_size(10);
 
-    group.bench_function("evaluate_position", |bencher| {
+    let array_states: Vec<StateArray> = read_state_file(DEFAULT_DEPTH).unwrap();
+
+    group.bench_function("array", |bencher| {
         bencher.iter_batched(
-            || states.clone(),
-            |cloned_states| {
-                for state in black_box(cloned_states) {
-                    evaluate_position(state);
+            || array_states.clone(),
+            |states| {
+                for state in states {
+                    connect_four::naive::evaluate_position(state);
+                }
+            },
+            SmallInput
+        )
+    });
+
+    let bitboard_states: Vec<StateBitboard> = read_state_file(DEFAULT_DEPTH).unwrap();
+
+    group.bench_function("bitboard", |bencher| {
+        bencher.iter_batched(
+            || bitboard_states.clone(),
+            |states| {
+                for state in states {
+                    connect_four::naive::evaluate_position(state);
                 }
             },
             SmallInput
@@ -64,14 +76,61 @@ fn multiple_states_same_depth(c: &mut Criterion) {
     group.finish();
 }
 
-fn multiple_depths(c: &mut Criterion) {
-    const MIN_DEPTH: usize = 20;
+fn different_methods_time(c: &mut Criterion) {
+    type StateType = StateBitboard;
+
+    let states: Vec<StateType> = read_state_file(DEFAULT_DEPTH).unwrap();
+
+    let mut group = c.benchmark_group("different_methods_time");
+    group.sample_size(10);
+
+    group.bench_function("naive", |bencher| {
+        bencher.iter_batched(
+            || states.clone(),
+            |cloned_states| {
+                for state in black_box(cloned_states) {
+                    connect_four::naive::evaluate_position(state);
+                }
+            },
+            SmallInput
+        )
+    });
+
+    group.bench_function("cache_strategy", |bencher| {
+        bencher.iter_batched(
+            || states.clone(),
+            |cloned_states| {
+                for state in black_box(cloned_states) {
+                    connect_four::cache_strategy::evaluate_position(state);
+                }
+            },
+            SmallInput
+        )
+    });
+
+    group.bench_function("threads", |bencher| {
+        bencher.iter_batched(
+            || states.clone(),
+            |cloned_states| {
+                for state in black_box(cloned_states) {
+                    connect_four::threads::evaluate_position(state);
+                }
+            },
+            SmallInput
+        )
+    });
+
+    group.finish();
+}
+
+fn multiple_depths_time(c: &mut Criterion) {
+    const MIN_DEPTH: usize = DEFAULT_DEPTH;
     const MAX_DEPTH: usize = 30;
 
     type StateType = StateBitboard;
-    let evaluate_position = connect_four::cache_strategy::evaluate_position;
+    let evaluate_position = connect_four::threads::evaluate_position;
 
-    let mut group = c.benchmark_group("multiple_depths");
+    let mut group = c.benchmark_group("multiple_depths_time");
 
     group.sample_size(10);
 
@@ -99,5 +158,5 @@ fn multiple_depths(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, example_state, multiple_states_same_depth, multiple_depths);
+criterion_group!(benches, example_state_time, array_vs_bitboard_time, different_methods_time, multiple_depths_time);
 criterion_main!(benches);

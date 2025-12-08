@@ -4,7 +4,8 @@ use crate::connect_four::solver_util::{EvaluatePositionReturn, DRAW, WORST_EVAL,
 use crate::connect_four::naive;
 use crate::connect_four::state::State;
 
-const MAX_CACHED_DEPTH: usize = 42;
+// adjusted for performance tuning
+const MAX_CACHED_DEPTH: usize = 35;
 
 struct GlobalState<S: State> {
     cache: StateCache<S>,

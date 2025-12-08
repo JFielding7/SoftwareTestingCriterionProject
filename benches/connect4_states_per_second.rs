@@ -11,6 +11,8 @@ use software_testing_project::connect_four::state::State;
 use software_testing_project::connect_four::state_bitboard::StateBitboard;
 use software_testing_project::connect_four::state_file::read_state_file;
 
+const DEFAULT_DEPTH: usize = 12;
+
 thread_local! {
     static STATES_EVALUATED: Cell<usize> = Cell::new(0);
 }
@@ -142,7 +144,7 @@ impl ValueFormatter for StatesPerSecondFormatter {
     }
 }
 
-fn example_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
+fn single_state(c: &mut Criterion<SecondsPerStateMeasurement>) {
     let board = [
         "   O   ",
         "   X   ",
@@ -155,7 +157,7 @@ fn example_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     type StateType = StateBitboard;
     let evaluate_position = connect_four::cache_strategy::evaluate_position;
 
-    let mut group = c.benchmark_group("example_sps");
+    let mut group = c.benchmark_group("single_state_sps");
     group.sample_size(10);
 
     group.bench_function("evaluate_position", |bencher| {
@@ -196,9 +198,6 @@ fn array_vs_bitboard_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
             |state| {
                 let ret = evaluate_position_array(black_box(state));
                 add_states_evaluated(ret.states_evaluated);
-
-                println!("States Evaluated: {}", ret.states_evaluated);
-                println!("Total Eval: {}", ret.eval);
             },
             SmallInput,
         )
@@ -212,9 +211,6 @@ fn array_vs_bitboard_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
             |state| {
                 let ret = evaluate_position_bitboard(black_box(state));
                 add_states_evaluated(ret.states_evaluated);
-
-                println!("States Evaluated: {}", ret.states_evaluated);
-                println!("Total Eval: {}", ret.eval);
             },
             SmallInput,
         )
@@ -224,11 +220,11 @@ fn array_vs_bitboard_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
 }
 
 fn multiple_depths_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
-    const MIN_DEPTH: usize = 20;
+    const MIN_DEPTH: usize = DEFAULT_DEPTH;
     const MAX_DEPTH: usize = 30;
 
     type StateType = StateBitboard;
-    let evaluate_position = connect_four::cache_strategy::evaluate_position;
+    let evaluate_position = connect_four::threads::evaluate_position;
 
     let mut group = c.benchmark_group("multiple_depths_sps");
 
@@ -261,7 +257,7 @@ fn multiple_depths_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
 criterion_group! {
     name = benches;
     config = Criterion::default().with_measurement(SecondsPerStateMeasurement);
-    targets = example_sps, array_vs_bitboard_sps, multiple_depths_sps
+    targets = single_state, array_vs_bitboard_sps, multiple_depths_sps
 }
 
 criterion_main!(benches);

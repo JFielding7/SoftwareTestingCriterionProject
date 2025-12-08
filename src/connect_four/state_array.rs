@@ -13,7 +13,7 @@ pub struct StateArray {
     current_player: Piece,
     last_move: usize,
     moves_made: usize,
-    curr_hash: u64,
+    curr_hash: u64, // iterative build hash, much faster than default Hash
 }
 
 impl Eq for StateArray {}
@@ -166,9 +166,7 @@ impl State for StateArray {
         } else {
             game_state.current_player = SECOND;
         }
-
-        println!("{}", game_state.moves_made);
-
+        
         game_state
     }
 
