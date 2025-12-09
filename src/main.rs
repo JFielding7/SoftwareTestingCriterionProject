@@ -10,7 +10,7 @@ fn main() -> io::Result<()> {
         .map(|_| rng().random::<i32>())
         .collect();
 
-    timsort(&mut vec);
+    mergesort(&mut vec);
 
     println!("{:?}", vec.is_sorted());
 

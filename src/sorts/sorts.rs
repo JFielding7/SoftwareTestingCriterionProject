@@ -76,10 +76,12 @@ pub fn heapsort(vec: &mut Vec<i32>) {
 }
 
 fn merge(vec: &mut Vec<i32>, mut start: usize, end: usize) {
-    let copy = vec[start..=end].to_vec();
+    let copy = vec[start..end].to_vec();
+
     let len = copy.len();
+    let mid = len >> 1;
+
     let mut left = 0;
-    let mid = len + 1 >> 1;
     let mut right = mid;
 
     while left < mid && right < len {
@@ -109,20 +111,20 @@ fn merge(vec: &mut Vec<i32>, mut start: usize, end: usize) {
 
 fn merge_sort_rec(vec: &mut Vec<i32>, start: usize, end: usize) {
 
-    if start == end {
+    if start + 1 >= end {
         return;
     }
 
     let mid = (start + end) >> 1;
 
     merge_sort_rec(vec, start, mid);
-    merge_sort_rec(vec, mid + 1, end);
+    merge_sort_rec(vec, mid, end);
 
     merge(vec, start, end);
 }
 
 pub fn mergesort(vec: &mut Vec<i32>) {
-    merge_sort_rec(vec, 0, vec.len() - 1);
+    merge_sort_rec(vec, 0, vec.len());
 }
 
 fn insertion_sort(vec: &mut [i32]) {
@@ -141,19 +143,18 @@ const THRESHOLD: usize = 64;
 
 fn timsort_rec(vec: &mut Vec<i32>, start: usize, end: usize) {
 
-    if end - start < THRESHOLD {
-        insertion_sort(&mut vec[start..=end]);
-        return;
+    if end - start <= THRESHOLD {
+        insertion_sort(&mut vec[start..end]);
+    } else {
+        let mid = (start + end) >> 1;
+
+        timsort_rec(vec, start, mid);
+        timsort_rec(vec, mid, end);
+
+        merge(vec, start, end);
     }
-
-    let mid = (start + end) >> 1;
-
-    timsort_rec(vec, start, mid);
-    timsort_rec(vec, mid + 1, end);
-
-    merge(vec, start, end);
 }
 
 pub fn timsort(vec: &mut Vec<i32>) {
-    timsort_rec(vec, 0, vec.len() - 1)
+    timsort_rec(vec, 0, vec.len())
 }

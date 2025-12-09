@@ -8,10 +8,11 @@ use software_testing_project::sorts::sorts::{heapsort, mergesort, quicksort, tim
 fn sort_rev(c: &mut Criterion) {
     const SIZE: usize = 1 << 20;
 
-    let mut group = c.benchmark_group("sort_rev");
     let vec: Vec<i32> = (0..SIZE as i32).rev().collect();
 
-    group.bench_function("sort_rev_stable", |bencher| {
+    let mut group = c.benchmark_group("sort_rev");
+
+    group.bench_function("stable", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| v.sort(),
@@ -19,7 +20,7 @@ fn sort_rev(c: &mut Criterion) {
         )
     });
 
-    group.bench_function("sort_rev_unstable", |bencher| {
+    group.bench_function("unstable", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| v.sort_unstable(),
@@ -28,7 +29,7 @@ fn sort_rev(c: &mut Criterion) {
     });
 
     // commented out because it is O(n^2), slowest by far
-    // group.bench_function("sort_rev_quicksort", |bencher| {
+    // group.bench_function("quicksort", |bencher| {
     //     bencher.iter_batched_ref(
     //         || vec.clone(),
     //         |mut v| quicksort(&mut v),
@@ -36,7 +37,7 @@ fn sort_rev(c: &mut Criterion) {
     //     )
     // });
 
-    group.bench_function("sort_rev_heapsort", |bencher| {
+    group.bench_function("heapsort", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| heapsort(v),
@@ -44,7 +45,7 @@ fn sort_rev(c: &mut Criterion) {
         )
     });
 
-    group.bench_function("sort_rev_mergesort", |bencher| {
+    group.bench_function("mergesort", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| mergesort(v),
@@ -52,7 +53,7 @@ fn sort_rev(c: &mut Criterion) {
         )
     });
 
-    group.bench_function("sort_rev_timsort", |bencher| {
+    group.bench_function("timsort", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| timsort(v),
@@ -66,10 +67,11 @@ fn sort_rev(c: &mut Criterion) {
 fn sort_sorted(c: &mut Criterion) {
     const SIZE: usize = 1 << 20;
 
-    let mut group = c.benchmark_group("sort_sorted");
     let vec: Vec<i32> = (0..SIZE as i32).collect();
 
-    group.bench_function("sort_sorted_stable", |bencher| {
+    let mut group = c.benchmark_group("sort_sorted");
+
+    group.bench_function("stable", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| v.sort(),
@@ -77,7 +79,7 @@ fn sort_sorted(c: &mut Criterion) {
         )
     });
 
-    group.bench_function("sort_sorted_unstable", |bencher| {
+    group.bench_function("unstable", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| v.sort_unstable(),
@@ -86,7 +88,7 @@ fn sort_sorted(c: &mut Criterion) {
     });
 
     // commented out because it is O(n^2), slowest by far
-    // group.bench_function("sort_sorted_quicksort", |bencher| {
+    // group.bench_function("quicksort", |bencher| {
     //     bencher.iter_batched_ref(
     //         || vec.clone(),
     //         |mut v| quicksort(&mut v),
@@ -94,7 +96,7 @@ fn sort_sorted(c: &mut Criterion) {
     //     )
     // });
 
-    group.bench_function("sort_sorted_heapsort", |bencher| {
+    group.bench_function("heapsort", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| heapsort(v),
@@ -102,7 +104,7 @@ fn sort_sorted(c: &mut Criterion) {
         )
     });
 
-    group.bench_function("sort_sorted_mergesort", |bencher| {
+    group.bench_function("mergesort", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| mergesort(v),
@@ -110,7 +112,7 @@ fn sort_sorted(c: &mut Criterion) {
         )
     });
 
-    group.bench_function("sort_sorted_timsort", |bencher| {
+    group.bench_function("timsort", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| timsort(v),
@@ -124,15 +126,16 @@ fn sort_sorted(c: &mut Criterion) {
 fn sort_random(c: &mut Criterion) {
     const SEED: u64 = 42;
     const SIZE: usize = 1 << 20;
-    let mut rng = Pcg64::seed_from_u64(SEED);
 
-    let mut group = c.benchmark_group("sort_random");
+    let mut rng = Pcg64::seed_from_u64(SEED);
 
     let vec: Vec<i32> = (0..SIZE)
         .map(|_| rng.random::<i32>())
         .collect();
 
-    group.bench_function("sort_random_stable", |bencher| {
+    let mut group = c.benchmark_group("sort_random");
+
+    group.bench_function("stable", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| v.sort(),
@@ -140,7 +143,7 @@ fn sort_random(c: &mut Criterion) {
         )
     });
 
-    group.bench_function("sort_random_unstable", |bencher| {
+    group.bench_function("unstable", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| v.sort_unstable(),
@@ -148,7 +151,7 @@ fn sort_random(c: &mut Criterion) {
         )
     });
 
-    group.bench_function("sort_random_quicksort", |bencher| {
+    group.bench_function("quicksort", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| quicksort(v),
@@ -156,7 +159,7 @@ fn sort_random(c: &mut Criterion) {
         )
     });
 
-    group.bench_function("sort_random_heapsort", |bencher| {
+    group.bench_function("heapsort", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| heapsort(v),
@@ -164,7 +167,7 @@ fn sort_random(c: &mut Criterion) {
         )
     });
 
-    group.bench_function("sort_random_mergesort", |bencher| {
+    group.bench_function("mergesort", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| mergesort(v),
@@ -172,7 +175,7 @@ fn sort_random(c: &mut Criterion) {
         )
     });
 
-    group.bench_function("sort_random_timsort", |bencher| {
+    group.bench_function("timsort", |bencher| {
         bencher.iter_batched_ref(
             || vec.clone(),
             |v| timsort(v),
