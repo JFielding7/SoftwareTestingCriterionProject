@@ -1,7 +1,7 @@
 # Table of Contents
 - [Overview](#Overview)
 	-  [Reports](#Reports)
-- [Installation and Setup](<#Installation and Setup>)
+- [Installation and Setup](#installation-and-setup)
 - [Usage](#Usage) 
 ## Overview
 This repository contains benches for [criterion.rs](https://github.com/criterion-rs/criterion.rs) along with the programs used for benchmarking. The goal of this was to get a feel for the library while also applying it to a program we care about.
