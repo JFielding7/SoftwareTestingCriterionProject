@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Index - Criterion.rs</title>
+    <style type="text/css">
+        body {
+            font: 14px Helvetica Neue;
+            text-rendering: optimizelegibility;
+        }
+
+        .body {
+            width: 960px;
+            margin: auto;
+        }
+
+        a:link {
+            color: #1F78B4;
+            text-decoration: none;
+        }
+
+        h2 {
+            font-size: 36px;
+            font-weight: 300;
+        }
+
+        h3 {
+            font-size: 24px;
+            font-weight: 300;
+        }
+
+        #footer {
+            height: 40px;
+            background: #888;
+            color: white;
+            font-size: larger;
+            font-weight: 300;
+        }
+
+        #footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        #footer p {
+            text-align: center
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #888;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="body">
+        <h2>Criterion.rs Benchmark Index</h2>
+        See individual benchmark pages below for more details.
+        <ul>
+            <li><a href="../array_vs_bitboard_sps/report/index.html">array_vs_bitboard_sps</a></li>
+            
+            <ul>
+                <li><a href="../array_vs_bitboard_sps/array/report/index.html">array</a></li>
+                <li><a href="../array_vs_bitboard_sps/bitboard/report/index.html">bitboard</a></li>
+            </ul>
+            <li><a href="../array_vs_bitboard_time/report/index.html">array_vs_bitboard_time</a></li>
+            
+            <ul>
+                <li><a href="../array_vs_bitboard_time/array/report/index.html">array</a></li>
+                <li><a href="../array_vs_bitboard_time/bitboard/report/index.html">bitboard</a></li>
+            </ul>
+            <li><a href="../different_methods_sps/report/index.html">different_methods_sps</a></li>
+            
+            <ul>
+                <li><a href="../different_methods_sps/caching/report/index.html">caching</a></li>
+                <li><a href="../different_methods_sps/naive/report/index.html">naive</a></li>
+                <li><a href="../different_methods_sps/threads/report/index.html">threads</a></li>
+            </ul>
+            <li><a href="../matrix_mult_large/report/index.html">matrix_mult_large</a></li>
+            
+            <ul>
+                <li><a href="../matrix_mult_large/matrixmultiply/report/index.html">matrixmultiply</a></li>
+                <li><a href="../matrix_mult_large/nalgebra/report/index.html">nalgebra</a></li>
+                <li><a href="../matrix_mult_large/ndarray/report/index.html">ndarray</a></li>
+                <li><a href="../matrix_mult_large/rulinalg/report/index.html">rulinalg</a></li>
+            </ul>
+            <li><a href="../matrix_mult_medium/report/index.html">matrix_mult_medium</a></li>
+            
+            <ul>
+                <li><a href="../matrix_mult_medium/matrixmultiply/report/index.html">matrixmultiply</a></li>
+                <li><a href="../matrix_mult_medium/nalgebra/report/index.html">nalgebra</a></li>
+                <li><a href="../matrix_mult_medium/ndarray/report/index.html">ndarray</a></li>
+                <li><a href="../matrix_mult_medium/rulinalg/report/index.html">rulinalg</a></li>
+            </ul>
+            <li><a href="../matrix_mult_small/report/index.html">matrix_mult_small</a></li>
+            
+            <ul>
+                <li><a href="../matrix_mult_small/matrixmultiply/report/index.html">matrixmultiply</a></li>
+                <li><a href="../matrix_mult_small/nalgebra/report/index.html">nalgebra</a></li>
+                <li><a href="../matrix_mult_small/ndarray/report/index.html">ndarray</a></li>
+                <li><a href="../matrix_mult_small/rulinalg/report/index.html">rulinalg</a></li>
+            </ul>
+            <li><a href="../min_different_threads/report/index.html">min_different_threads</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../min_different_threads/multi_threaded_min_fast/report/index.html">multi_threaded_min_fast</a></th>
+                            <th><a href="../min_different_threads/multi_threaded_min_slow/report/index.html">multi_threaded_min_slow</a></th>
+                        </tr>
+                        <tr>
+                            <th><a href="../min_different_threads/1/report/index.html">1</a></th>
+                            <td><a href="../min_different_threads/multi_threaded_min_fast/1/report/index.html">min_different_threads/multi_threaded_min_fast/1</a></td>
+                            <td><a href="../min_different_threads/multi_threaded_min_slow/1/report/index.html">min_different_threads/multi_threaded_min_slow/1</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../min_different_threads/2/report/index.html">2</a></th>
+                            <td><a href="../min_different_threads/multi_threaded_min_fast/2/report/index.html">min_different_threads/multi_threaded_min_fast/2</a></td>
+                            <td><a href="../min_different_threads/multi_threaded_min_slow/2/report/index.html">min_different_threads/multi_threaded_min_slow/2</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../min_different_threads/3/report/index.html">3</a></th>
+                            <td><a href="../min_different_threads/multi_threaded_min_fast/3/report/index.html">min_different_threads/multi_threaded_min_fast/3</a></td>
+                            <td><a href="../min_different_threads/multi_threaded_min_slow/3/report/index.html">min_different_threads/multi_threaded_min_slow/3</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../min_different_threads/4/report/index.html">4</a></th>
+                            <td><a href="../min_different_threads/multi_threaded_min_fast/4/report/index.html">min_different_threads/multi_threaded_min_fast/4</a></td>
+                            <td><a href="../min_different_threads/multi_threaded_min_slow/4/report/index.html">min_different_threads/multi_threaded_min_slow/4</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../min_different_threads/5/report/index.html">5</a></th>
+                            <td><a href="../min_different_threads/multi_threaded_min_fast/5/report/index.html">min_different_threads/multi_threaded_min_fast/5</a></td>
+                            <td><a href="../min_different_threads/multi_threaded_min_slow/5/report/index.html">min_different_threads/multi_threaded_min_slow/5</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../min_different_threads/6/report/index.html">6</a></th>
+                            <td><a href="../min_different_threads/multi_threaded_min_fast/6/report/index.html">min_different_threads/multi_threaded_min_fast/6</a></td>
+                            <td><a href="../min_different_threads/multi_threaded_min_slow/6/report/index.html">min_different_threads/multi_threaded_min_slow/6</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../min_different_threads/7/report/index.html">7</a></th>
+                            <td><a href="../min_different_threads/multi_threaded_min_fast/7/report/index.html">min_different_threads/multi_threaded_min_fast/7</a></td>
+                            <td><a href="../min_different_threads/multi_threaded_min_slow/7/report/index.html">min_different_threads/multi_threaded_min_slow/7</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../min_different_threads/8/report/index.html">8</a></th>
+                            <td><a href="../min_different_threads/multi_threaded_min_fast/8/report/index.html">min_different_threads/multi_threaded_min_fast/8</a></td>
+                            <td><a href="../min_different_threads/multi_threaded_min_slow/8/report/index.html">min_different_threads/multi_threaded_min_slow/8</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../min_with_max_threads/report/index.html">min_with_max_threads</a></li>
+            
+            <ul>
+                <li><a href="../min_with_max_threads/multi_threaded_min_fast/report/index.html">multi_threaded_min_fast</a></li>
+                <li><a href="../min_with_max_threads/multi_threaded_min_slow/report/index.html">multi_threaded_min_slow</a></li>
+            </ul>
+            <li><a href="../multiple_depths_sps/report/index.html">multiple_depths_sps</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../multiple_depths_sps/caching/report/index.html">caching</a></th>
+                            <th><a href="../multiple_depths_sps/naive/report/index.html">naive</a></th>
+                            <th><a href="../multiple_depths_sps/threads/report/index.html">threads</a></th>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/15/report/index.html">15</a></th>
+                            <td><a href="../multiple_depths_sps/caching/15/report/index.html">multiple_depths_sps/caching/15</a></td>
+                            <td><a href="../multiple_depths_sps/naive/15/report/index.html">multiple_depths_sps/naive/15</a></td>
+                            <td><a href="../multiple_depths_sps/threads/15/report/index.html">multiple_depths_sps/threads/15</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/16/report/index.html">16</a></th>
+                            <td><a href="../multiple_depths_sps/caching/16/report/index.html">multiple_depths_sps/caching/16</a></td>
+                            <td><a href="../multiple_depths_sps/naive/16/report/index.html">multiple_depths_sps/naive/16</a></td>
+                            <td><a href="../multiple_depths_sps/threads/16/report/index.html">multiple_depths_sps/threads/16</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/17/report/index.html">17</a></th>
+                            <td><a href="../multiple_depths_sps/caching/17/report/index.html">multiple_depths_sps/caching/17</a></td>
+                            <td><a href="../multiple_depths_sps/naive/17/report/index.html">multiple_depths_sps/naive/17</a></td>
+                            <td><a href="../multiple_depths_sps/threads/17/report/index.html">multiple_depths_sps/threads/17</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/18/report/index.html">18</a></th>
+                            <td><a href="../multiple_depths_sps/caching/18/report/index.html">multiple_depths_sps/caching/18</a></td>
+                            <td><a href="../multiple_depths_sps/naive/18/report/index.html">multiple_depths_sps/naive/18</a></td>
+                            <td><a href="../multiple_depths_sps/threads/18/report/index.html">multiple_depths_sps/threads/18</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/19/report/index.html">19</a></th>
+                            <td><a href="../multiple_depths_sps/caching/19/report/index.html">multiple_depths_sps/caching/19</a></td>
+                            <td><a href="../multiple_depths_sps/naive/19/report/index.html">multiple_depths_sps/naive/19</a></td>
+                            <td><a href="../multiple_depths_sps/threads/19/report/index.html">multiple_depths_sps/threads/19</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/20/report/index.html">20</a></th>
+                            <td><a href="../multiple_depths_sps/caching/20/report/index.html">multiple_depths_sps/caching/20</a></td>
+                            <td><a href="../multiple_depths_sps/naive/20/report/index.html">multiple_depths_sps/naive/20</a></td>
+                            <td><a href="../multiple_depths_sps/threads/20/report/index.html">multiple_depths_sps/threads/20</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/21/report/index.html">21</a></th>
+                            <td><a href="../multiple_depths_sps/caching/21/report/index.html">multiple_depths_sps/caching/21</a></td>
+                            <td><a href="../multiple_depths_sps/naive/21/report/index.html">multiple_depths_sps/naive/21</a></td>
+                            <td><a href="../multiple_depths_sps/threads/21/report/index.html">multiple_depths_sps/threads/21</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/22/report/index.html">22</a></th>
+                            <td><a href="../multiple_depths_sps/caching/22/report/index.html">multiple_depths_sps/caching/22</a></td>
+                            <td><a href="../multiple_depths_sps/naive/22/report/index.html">multiple_depths_sps/naive/22</a></td>
+                            <td><a href="../multiple_depths_sps/threads/22/report/index.html">multiple_depths_sps/threads/22</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/23/report/index.html">23</a></th>
+                            <td><a href="../multiple_depths_sps/caching/23/report/index.html">multiple_depths_sps/caching/23</a></td>
+                            <td><a href="../multiple_depths_sps/naive/23/report/index.html">multiple_depths_sps/naive/23</a></td>
+                            <td><a href="../multiple_depths_sps/threads/23/report/index.html">multiple_depths_sps/threads/23</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/24/report/index.html">24</a></th>
+                            <td><a href="../multiple_depths_sps/caching/24/report/index.html">multiple_depths_sps/caching/24</a></td>
+                            <td><a href="../multiple_depths_sps/naive/24/report/index.html">multiple_depths_sps/naive/24</a></td>
+                            <td><a href="../multiple_depths_sps/threads/24/report/index.html">multiple_depths_sps/threads/24</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/25/report/index.html">25</a></th>
+                            <td><a href="../multiple_depths_sps/caching/25/report/index.html">multiple_depths_sps/caching/25</a></td>
+                            <td><a href="../multiple_depths_sps/naive/25/report/index.html">multiple_depths_sps/naive/25</a></td>
+                            <td><a href="../multiple_depths_sps/threads/25/report/index.html">multiple_depths_sps/threads/25</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/26/report/index.html">26</a></th>
+                            <td><a href="../multiple_depths_sps/caching/26/report/index.html">multiple_depths_sps/caching/26</a></td>
+                            <td><a href="../multiple_depths_sps/naive/26/report/index.html">multiple_depths_sps/naive/26</a></td>
+                            <td><a href="../multiple_depths_sps/threads/26/report/index.html">multiple_depths_sps/threads/26</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/27/report/index.html">27</a></th>
+                            <td><a href="../multiple_depths_sps/caching/27/report/index.html">multiple_depths_sps/caching/27</a></td>
+                            <td><a href="../multiple_depths_sps/naive/27/report/index.html">multiple_depths_sps/naive/27</a></td>
+                            <td><a href="../multiple_depths_sps/threads/27/report/index.html">multiple_depths_sps/threads/27</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/28/report/index.html">28</a></th>
+                            <td><a href="../multiple_depths_sps/caching/28/report/index.html">multiple_depths_sps/caching/28</a></td>
+                            <td><a href="../multiple_depths_sps/naive/28/report/index.html">multiple_depths_sps/naive/28</a></td>
+                            <td><a href="../multiple_depths_sps/threads/28/report/index.html">multiple_depths_sps/threads/28</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/29/report/index.html">29</a></th>
+                            <td><a href="../multiple_depths_sps/caching/29/report/index.html">multiple_depths_sps/caching/29</a></td>
+                            <td><a href="../multiple_depths_sps/naive/29/report/index.html">multiple_depths_sps/naive/29</a></td>
+                            <td><a href="../multiple_depths_sps/threads/29/report/index.html">multiple_depths_sps/threads/29</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_sps/30/report/index.html">30</a></th>
+                            <td><a href="../multiple_depths_sps/caching/30/report/index.html">multiple_depths_sps/caching/30</a></td>
+                            <td><a href="../multiple_depths_sps/naive/30/report/index.html">multiple_depths_sps/naive/30</a></td>
+                            <td><a href="../multiple_depths_sps/threads/30/report/index.html">multiple_depths_sps/threads/30</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../multiple_depths_time/report/index.html">multiple_depths_time</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../multiple_depths_time/caching/report/index.html">caching</a></th>
+                            <th><a href="../multiple_depths_time/naive/report/index.html">naive</a></th>
+                            <th><a href="../multiple_depths_time/threads/report/index.html">threads</a></th>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/15/report/index.html">15</a></th>
+                            <td><a href="../multiple_depths_time/caching/15/report/index.html">multiple_depths_time/caching/15</a></td>
+                            <td><a href="../multiple_depths_time/naive/15/report/index.html">multiple_depths_time/naive/15</a></td>
+                            <td><a href="../multiple_depths_time/threads/15/report/index.html">multiple_depths_time/threads/15</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/16/report/index.html">16</a></th>
+                            <td><a href="../multiple_depths_time/caching/16/report/index.html">multiple_depths_time/caching/16</a></td>
+                            <td><a href="../multiple_depths_time/naive/16/report/index.html">multiple_depths_time/naive/16</a></td>
+                            <td><a href="../multiple_depths_time/threads/16/report/index.html">multiple_depths_time/threads/16</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/17/report/index.html">17</a></th>
+                            <td><a href="../multiple_depths_time/caching/17/report/index.html">multiple_depths_time/caching/17</a></td>
+                            <td><a href="../multiple_depths_time/naive/17/report/index.html">multiple_depths_time/naive/17</a></td>
+                            <td><a href="../multiple_depths_time/threads/17/report/index.html">multiple_depths_time/threads/17</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/18/report/index.html">18</a></th>
+                            <td><a href="../multiple_depths_time/caching/18/report/index.html">multiple_depths_time/caching/18</a></td>
+                            <td><a href="../multiple_depths_time/naive/18/report/index.html">multiple_depths_time/naive/18</a></td>
+                            <td><a href="../multiple_depths_time/threads/18/report/index.html">multiple_depths_time/threads/18</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/19/report/index.html">19</a></th>
+                            <td><a href="../multiple_depths_time/caching/19/report/index.html">multiple_depths_time/caching/19</a></td>
+                            <td><a href="../multiple_depths_time/naive/19/report/index.html">multiple_depths_time/naive/19</a></td>
+                            <td><a href="../multiple_depths_time/threads/19/report/index.html">multiple_depths_time/threads/19</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/20/report/index.html">20</a></th>
+                            <td><a href="../multiple_depths_time/caching/20/report/index.html">multiple_depths_time/caching/20</a></td>
+                            <td><a href="../multiple_depths_time/naive/20/report/index.html">multiple_depths_time/naive/20</a></td>
+                            <td><a href="../multiple_depths_time/threads/20/report/index.html">multiple_depths_time/threads/20</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/21/report/index.html">21</a></th>
+                            <td><a href="../multiple_depths_time/caching/21/report/index.html">multiple_depths_time/caching/21</a></td>
+                            <td><a href="../multiple_depths_time/naive/21/report/index.html">multiple_depths_time/naive/21</a></td>
+                            <td><a href="../multiple_depths_time/threads/21/report/index.html">multiple_depths_time/threads/21</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/22/report/index.html">22</a></th>
+                            <td><a href="../multiple_depths_time/caching/22/report/index.html">multiple_depths_time/caching/22</a></td>
+                            <td><a href="../multiple_depths_time/naive/22/report/index.html">multiple_depths_time/naive/22</a></td>
+                            <td><a href="../multiple_depths_time/threads/22/report/index.html">multiple_depths_time/threads/22</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/23/report/index.html">23</a></th>
+                            <td><a href="../multiple_depths_time/caching/23/report/index.html">multiple_depths_time/caching/23</a></td>
+                            <td><a href="../multiple_depths_time/naive/23/report/index.html">multiple_depths_time/naive/23</a></td>
+                            <td><a href="../multiple_depths_time/threads/23/report/index.html">multiple_depths_time/threads/23</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/24/report/index.html">24</a></th>
+                            <td><a href="../multiple_depths_time/caching/24/report/index.html">multiple_depths_time/caching/24</a></td>
+                            <td><a href="../multiple_depths_time/naive/24/report/index.html">multiple_depths_time/naive/24</a></td>
+                            <td><a href="../multiple_depths_time/threads/24/report/index.html">multiple_depths_time/threads/24</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/25/report/index.html">25</a></th>
+                            <td><a href="../multiple_depths_time/caching/25/report/index.html">multiple_depths_time/caching/25</a></td>
+                            <td><a href="../multiple_depths_time/naive/25/report/index.html">multiple_depths_time/naive/25</a></td>
+                            <td><a href="../multiple_depths_time/threads/25/report/index.html">multiple_depths_time/threads/25</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/26/report/index.html">26</a></th>
+                            <td><a href="../multiple_depths_time/caching/26/report/index.html">multiple_depths_time/caching/26</a></td>
+                            <td><a href="../multiple_depths_time/naive/26/report/index.html">multiple_depths_time/naive/26</a></td>
+                            <td><a href="../multiple_depths_time/threads/26/report/index.html">multiple_depths_time/threads/26</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/27/report/index.html">27</a></th>
+                            <td><a href="../multiple_depths_time/caching/27/report/index.html">multiple_depths_time/caching/27</a></td>
+                            <td><a href="../multiple_depths_time/naive/27/report/index.html">multiple_depths_time/naive/27</a></td>
+                            <td><a href="../multiple_depths_time/threads/27/report/index.html">multiple_depths_time/threads/27</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/28/report/index.html">28</a></th>
+                            <td><a href="../multiple_depths_time/caching/28/report/index.html">multiple_depths_time/caching/28</a></td>
+                            <td><a href="../multiple_depths_time/naive/28/report/index.html">multiple_depths_time/naive/28</a></td>
+                            <td><a href="../multiple_depths_time/threads/28/report/index.html">multiple_depths_time/threads/28</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/29/report/index.html">29</a></th>
+                            <td><a href="../multiple_depths_time/caching/29/report/index.html">multiple_depths_time/caching/29</a></td>
+                            <td><a href="../multiple_depths_time/naive/29/report/index.html">multiple_depths_time/naive/29</a></td>
+                            <td><a href="../multiple_depths_time/threads/29/report/index.html">multiple_depths_time/threads/29</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../multiple_depths_time/30/report/index.html">30</a></th>
+                            <td><a href="../multiple_depths_time/caching/30/report/index.html">multiple_depths_time/caching/30</a></td>
+                            <td><a href="../multiple_depths_time/naive/30/report/index.html">multiple_depths_time/naive/30</a></td>
+                            <td><a href="../multiple_depths_time/threads/30/report/index.html">multiple_depths_time/threads/30</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../single_depth_time/report/index.html">single_depth_time</a></li>
+            
+            <ul>
+                <li><a href="../single_depth_time/caching/report/index.html">caching</a></li>
+                <li><a href="../single_depth_time/naive/report/index.html">naive</a></li>
+                <li><a href="../single_depth_time/threads/report/index.html">threads</a></li>
+            </ul>
+            <li>single_state_sps</li>
+            
+            <ul>
+                <li><a href="../single_state_sps/evaluate_position/report/index.html">evaluate_position</a></li>
+            </ul>
+            <li>single_state_time</li>
+            
+            <ul>
+                <li><a href="../single_state_time/evaluate_position/report/index.html">evaluate_position</a></li>
+            </ul>
+            <li><a href="../sort_random/report/index.html">sort_random</a></li>
+            
+            <ul>
+                <li><a href="../sort_random/heapsort/report/index.html">heapsort</a></li>
+                <li><a href="../sort_random/mergesort/report/index.html">mergesort</a></li>
+                <li><a href="../sort_random/quicksort/report/index.html">quicksort</a></li>
+                <li><a href="../sort_random/stable/report/index.html">stable</a></li>
+                <li><a href="../sort_random/timsort/report/index.html">timsort</a></li>
+                <li><a href="../sort_random/unstable/report/index.html">unstable</a></li>
+            </ul>
+            <li><a href="../sort_rev/report/index.html">sort_rev</a></li>
+            
+            <ul>
+                <li><a href="../sort_rev/heapsort/report/index.html">heapsort</a></li>
+                <li><a href="../sort_rev/mergesort/report/index.html">mergesort</a></li>
+                <li><a href="../sort_rev/stable/report/index.html">stable</a></li>
+                <li><a href="../sort_rev/timsort/report/index.html">timsort</a></li>
+                <li><a href="../sort_rev/unstable/report/index.html">unstable</a></li>
+            </ul>
+            <li><a href="../sort_sorted/report/index.html">sort_sorted</a></li>
+            
+            <ul>
+                <li><a href="../sort_sorted/heapsort/report/index.html">heapsort</a></li>
+                <li><a href="../sort_sorted/mergesort/report/index.html">mergesort</a></li>
+                <li><a href="../sort_sorted/stable/report/index.html">stable</a></li>
+                <li><a href="../sort_sorted/timsort/report/index.html">timsort</a></li>
+                <li><a href="../sort_sorted/unstable/report/index.html">unstable</a></li>
+            </ul>
+        </ul>
+    </div>
+    <div id="footer">
+        <p>This report was generated by
+            <a href="https://github.com/criterion-rs/criterion.rs">Criterion.rs</a>, a statistics-driven benchmarking
+            library in Rust.</p>
+    </div>
+</body>
+</html>
