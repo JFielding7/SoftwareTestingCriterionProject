@@ -6,9 +6,9 @@ const MAX_THREADS: usize = 8;
 
 fn min_with_max_threads(c: &mut Criterion) {
     const VEC_SIZE: i32 = 1 << 21;
+    let vec: Vec<i32> = (0..VEC_SIZE).collect();
     
     let mut group = c.benchmark_group("min_with_max_threads");
-    let vec: Vec<i32> = (0..VEC_SIZE).collect();
 
     group.bench_function("multi_threaded_min_slow", |bencher| {
         bencher.iter(|| {
@@ -26,9 +26,8 @@ fn min_with_max_threads(c: &mut Criterion) {
 }
 
 fn min_different_threads(c: &mut Criterion) {
-    const MIN_SIZE: i32 = 1 << 19;
-    const MAX_SIZE: i32 = 1 << 22;
-    const SIZE_STEP: usize = 1 << 19;
+    const VEC_SIZE: i32 = 1 << 21;
+    let vec: Vec<i32> = (0..VEC_SIZE).collect();
 
     let mut group = c.benchmark_group("min_different_threads");
     group.sample_size(10);
@@ -38,25 +37,21 @@ fn min_different_threads(c: &mut Criterion) {
             .summary_scale(AxisScale::Linear)
     );
 
-    for size in (MIN_SIZE..=MAX_SIZE).step_by(SIZE_STEP) {
-        let vec: Vec<i32> = (0..size).collect();
+    for num_threads in 1..=MAX_THREADS {
 
-        for num_threads in 1..=MAX_THREADS {
+        group.bench_function(
+            BenchmarkId::new("multi_threaded_min_slow", num_threads),
+            |bencher| {
+                bencher.iter(|| multi_threaded_min_slow(black_box(&vec), num_threads));
+            }
+        );
 
-            group.bench_function(
-                BenchmarkId::new(format!("multi_threaded_min_slow_{size}"), num_threads),
-                |bencher| {
-                    bencher.iter(|| multi_threaded_min_slow(&vec, num_threads));
-                }
-            );
-
-            group.bench_function(
-                BenchmarkId::new(format!("multi_threaded_min_fast_{size}"), num_threads),
-                |bencher| {
-                    bencher.iter(|| multi_threaded_min_fast(&vec, num_threads));
-                }
-            );
-        }
+        group.bench_function(
+            BenchmarkId::new("multi_threaded_min_fast", num_threads),
+            |bencher| {
+                bencher.iter(|| multi_threaded_min_fast(black_box(&vec), num_threads));
+            }
+        );
     }
     
     group.finish();

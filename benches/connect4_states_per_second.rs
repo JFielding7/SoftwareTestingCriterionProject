@@ -1,5 +1,4 @@
 use std::cell::Cell;
-use std::hint::black_box;
 use std::ops::Add;
 use std::time::Instant;
 use criterion::measurement::{Measurement, ValueFormatter};
@@ -158,8 +157,7 @@ fn default_board() -> Vec<String> {
 fn single_state_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     type StateType = StateBitboard;
     let state: StateType = StateType::encode(&default_board());
-
-    let evaluate_position = connect_four::cache_strategy::evaluate_position;
+    let evaluate_position = connect_four::threads::evaluate_position;
 
     let mut group = c.benchmark_group("single_state_sps");
     group.sample_size(10);
@@ -168,7 +166,7 @@ fn single_state_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
         bencher.iter_batched(
             || state.clone(),
             |state| {
-                let ret = evaluate_position(black_box(state));
+                let ret = evaluate_position(state);
                 add_states_evaluated(ret.states_evaluated);
             },
             SmallInput,
@@ -181,29 +179,25 @@ fn single_state_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
 fn array_vs_bitboard_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     let board = default_board();
 
-    let mut group = c.benchmark_group("array_vs_bitboard_pps");
+    let mut group = c.benchmark_group("array_vs_bitboard_sps");
     group.sample_size(10);
-
-    let evaluate_position_array = connect_four::naive::evaluate_position;
 
     group.bench_function("array", |bencher| {
         bencher.iter_batched(
             || StateArray::encode(&board),
             |state| {
-                let ret = evaluate_position_array(black_box(state));
+                let ret = connect_four::cache_strategy::evaluate_position(state);
                 add_states_evaluated(ret.states_evaluated);
             },
             SmallInput,
         )
     });
 
-    let evaluate_position_bitboard = connect_four::naive::evaluate_position;
-
     group.bench_function("bitboard", |bencher| {
         bencher.iter_batched(
             || StateBitboard::encode(&board),
             |state| {
-                let ret = evaluate_position_bitboard(black_box(state));
+                let ret = connect_four::cache_strategy::evaluate_position(state);
                 add_states_evaluated(ret.states_evaluated);
             },
             SmallInput,
@@ -217,7 +211,7 @@ fn different_methods_sps(c: &mut Criterion<SecondsPerStateMeasurement>) {
     type StateType = StateBitboard;
     let state = StateType::encode(&default_board());
 
-    let mut group = c.benchmark_group("different_methods_time");
+    let mut group = c.benchmark_group("different_methods_sps");
     group.sample_size(10);
 
     group.bench_function("naive", |bencher| {

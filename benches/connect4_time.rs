@@ -1,5 +1,4 @@
 use criterion::{criterion_group, criterion_main, AxisScale, BenchmarkId, Criterion, PlotConfiguration};
-use std::hint::black_box;
 use criterion::BatchSize::SmallInput;
 use software_testing_project::connect_four;
 use software_testing_project::connect_four::state_array::StateArray;
@@ -21,8 +20,7 @@ fn single_state_time(c: &mut Criterion) {
     ].map(|row| row.to_string()).into_iter().collect();
 
     type StateType = StateBitboard;
-
-    let evaluate_position = connect_four::naive::evaluate_position;
+    let evaluate_position = connect_four::cache_strategy::evaluate_position;
 
     let mut group = c.benchmark_group("single_state_time");
     group.sample_size(10);
@@ -31,7 +29,7 @@ fn single_state_time(c: &mut Criterion) {
         bencher.iter_batched(
             || StateType::encode(&board),
             |state| {
-                evaluate_position(black_box(state));
+                evaluate_position(state);
             },
             SmallInput,
         )
@@ -42,17 +40,17 @@ fn single_state_time(c: &mut Criterion) {
 
 fn array_vs_bitboard_time(c: &mut Criterion) {
 
+    let array_states: Vec<StateArray> = read_state_file(DEFAULT_DEPTH).unwrap();
+
     let mut group = c.benchmark_group("array_vs_bitboard_time");
     group.sample_size(10);
-
-    let array_states: Vec<StateArray> = read_state_file(DEFAULT_DEPTH).unwrap();
 
     group.bench_function("array", |bencher| {
         bencher.iter_batched(
             || array_states.clone(),
             |states| {
                 for state in states {
-                    connect_four::naive::evaluate_position(state);
+                    connect_four::cache_strategy::evaluate_position(state);
                 }
             },
             SmallInput
@@ -66,7 +64,7 @@ fn array_vs_bitboard_time(c: &mut Criterion) {
             || bitboard_states.clone(),
             |states| {
                 for state in states {
-                    connect_four::naive::evaluate_position(state);
+                    connect_four::cache_strategy::evaluate_position(state);
                 }
             },
             SmallInput
@@ -77,9 +75,9 @@ fn array_vs_bitboard_time(c: &mut Criterion) {
 }
 
 fn single_depth_time(c: &mut Criterion) {
-    const DEPTH: usize = DEFAULT_DEPTH;
-    type StateType = StateBitboard;
+    const DEPTH: usize = 15;
 
+    type StateType = StateArray;
     let states: Vec<StateType> = read_state_file(DEPTH).unwrap();
 
     let mut group = c.benchmark_group("single_depth_time");
@@ -88,8 +86,8 @@ fn single_depth_time(c: &mut Criterion) {
     group.bench_function("naive", |bencher| {
         bencher.iter_batched(
             || states.clone(),
-            |cloned_states| {
-                for state in black_box(cloned_states) {
+            |curr_states| {
+                for state in curr_states {
                     connect_four::naive::evaluate_position(state);
                 }
             },
@@ -100,8 +98,8 @@ fn single_depth_time(c: &mut Criterion) {
     group.bench_function("caching", |bencher| {
         bencher.iter_batched(
             || states.clone(),
-            |cloned_states| {
-                for state in black_box(cloned_states) {
+            |curr_states| {
+                for state in curr_states {
                     connect_four::cache_strategy::evaluate_position(state);
                 }
             },
@@ -112,8 +110,8 @@ fn single_depth_time(c: &mut Criterion) {
     group.bench_function("threads", |bencher| {
         bencher.iter_batched(
             || states.clone(),
-            |cloned_states| {
-                for state in black_box(cloned_states) {
+            |curr_states| {
+                for state in curr_states {
                     connect_four::threads::evaluate_position(state);
                 }
             },
@@ -129,7 +127,6 @@ fn multiple_depths_time(c: &mut Criterion) {
     const MAX_DEPTH: usize = 30;
 
     type StateType = StateBitboard;
-
     let mut group = c.benchmark_group("multiple_depths_time");
 
     group.sample_size(10);
@@ -147,7 +144,7 @@ fn multiple_depths_time(c: &mut Criterion) {
                 || states.clone(),
                 |curr_states| {
                     for state in curr_states {
-                        connect_four::naive::evaluate_position(black_box(state));
+                        connect_four::naive::evaluate_position(state);
                     }
                 },
                 SmallInput
@@ -159,7 +156,7 @@ fn multiple_depths_time(c: &mut Criterion) {
                 || states.clone(),
                 |curr_states| {
                     for state in curr_states {
-                        connect_four::cache_strategy::evaluate_position(black_box(state));
+                        connect_four::cache_strategy::evaluate_position(state);
                     }
                 },
                 SmallInput
@@ -171,7 +168,7 @@ fn multiple_depths_time(c: &mut Criterion) {
                 || states.clone(),
                 |curr_states| {
                     for state in curr_states {
-                        connect_four::threads::evaluate_position(black_box(state));
+                        connect_four::threads::evaluate_position(state);
                     }
                 },
                 SmallInput
