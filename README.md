@@ -17,7 +17,7 @@ Valgrind must also be installed. On debian based distributions, this can be inst
 apt install valgrind
 ```
 
-Current releases of valgrind can also be done [here](https://valgrind.org/downloads/current.html)
+Current releases of valgrind can also be downloaded [here](https://valgrind.org/downloads/current.html)
 
 Gungraun needs its benchmark runner to run benchmarks. To get this, install the following globally with cargo using:
 
